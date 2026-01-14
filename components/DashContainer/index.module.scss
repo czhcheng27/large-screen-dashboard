@@ -15,9 +15,9 @@
   grid-template-rows: 1fr 1fr;
   gap: 12px;
 
-  div {
-    background-color: wheat;
-  }
+  // div {
+  //   background-color: wheat;
+  // }
 }
 
 .center {
@@ -43,8 +43,6 @@
 }
 
 .centerBottom > div {
-  background-color: wheat;
-  padding: 12px;
   box-sizing: border-box;
   display: flex;
   align-items: center;

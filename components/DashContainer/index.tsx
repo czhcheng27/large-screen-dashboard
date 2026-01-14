@@ -1,3 +1,4 @@
+import CardWrapper from "../CardWrapper";
 import css from "./index.module.scss";
 
 interface DashContainerProps {}
@@ -7,23 +8,39 @@ const DashContainer = ({}: DashContainerProps) => {
     <div className={css.dashContainer}>
       {/* left side */}
       <div className={css.leftSide}>
-        <div>left top</div>
-        <div>left bottom</div>
+        <div>
+          <CardWrapper title="left top">left top</CardWrapper>
+        </div>
+        <div>
+          <CardWrapper title="left bottom">left bottom</CardWrapper>
+        </div>
       </div>
 
       {/* center */}
       <div className={css.center}>
         <div className={css.centerTop}>center top</div>
         <div className={css.centerBottom}>
-          <div>center bottom left</div>
-          <div>center bottom right</div>
+          <div>
+            <CardWrapper title="center bottom left">
+              center bottom left
+            </CardWrapper>
+          </div>
+          <div>
+            <CardWrapper title="center bottom right">
+              center bottom right
+            </CardWrapper>
+          </div>
         </div>
       </div>
 
       {/* right side */}
       <div className={css.rightSide}>
-        <div>right top</div>
-        <div>right bottom</div>
+        <div>
+          <CardWrapper title="right top">right top</CardWrapper>
+        </div>
+        <div>
+          <CardWrapper title="right bottom">right bottom</CardWrapper>
+        </div>
       </div>
     </div>
   );
