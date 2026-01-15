@@ -68,6 +68,29 @@
 
 .titleRight {
   display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-right: 8px;
+
+  .filterSelect {
+    background: rgba(0, 231, 255, 0.1);
+    border: 1px solid rgba(0, 231, 255, 0.3);
+    border-radius: 4px;
+    color: #fff;
+    font-size: 12px;
+    padding: 2px 6px;
+    cursor: pointer;
+    outline: none;
+
+    &:hover {
+      border-color: rgba(0, 231, 255, 0.6);
+    }
+
+    option {
+      background: #0a1929;
+      color: #fff;
+    }
+  }
 
   .amplifyIcon {
     width: 20px;
@@ -82,4 +105,23 @@
       background-image: url("/icon21.png");
     }
   }
+
+  .collapseIcon {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    background-size: 20px 20px;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-image: url("/icon24.png");
+
+    &:hover {
+      background-image: url("/icon22.png");
+    }
+  }
+}
+
+.content {
+  width: 100%;
+  height: calc(100% - 40px);
 }
