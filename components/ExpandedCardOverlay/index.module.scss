@@ -1,0 +1,5 @@
+.expandedOverlay {
+  pointer-events: auto;
+  overflow: hidden;
+  will-change: top, left, width, height, opacity;
+}
