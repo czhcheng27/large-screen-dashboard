@@ -39,7 +39,6 @@ const ExpandedCardOverlay = () => {
   const animationRef = useRef<number | null>(null);
 
   useEffect(() => {
-    // 清理之前的动画
     if (animationRef.current) {
       cancelAnimationFrame(animationRef.current);
       animationRef.current = null;
@@ -49,20 +48,27 @@ const ExpandedCardOverlay = () => {
       const { sourceRect, targetRect } = expandedCard;
       setDisplayedCard(expandedCard);
 
-      // 先设置初始位置（源卡片位置）
+      // 计算初始缩放和偏移，使其重合在源位置
+      const scaleX = sourceRect.width / targetRect.width;
+      const scaleY = sourceRect.height / targetRect.height;
+      const translateX = sourceRect.left - targetRect.left;
+      const translateY = sourceRect.top - targetRect.top;
+
+      // 初始状态：虽然尺寸是目标尺寸，但通过 transform 缩小到位移到源位置
       setStyle({
         position: "fixed",
-        top: sourceRect.top,
-        left: sourceRect.left,
-        width: sourceRect.width,
-        height: sourceRect.height,
+        top: targetRect.top,
+        left: targetRect.left,
+        width: targetRect.width,
+        height: targetRect.height,
+        transform: `translate(${translateX}px, ${translateY}px) scale(${scaleX}, ${scaleY})`,
+        transformOrigin: "top left",
         zIndex: 1000,
         transition: "none",
-        opacity: 1,
+        opacity: 0,
       });
       setIsVisible(true);
 
-      // 下一帧开始动画到目标位置
       animationRef.current = requestAnimationFrame(() => {
         animationRef.current = requestAnimationFrame(() => {
           setStyle({
@@ -71,30 +77,37 @@ const ExpandedCardOverlay = () => {
             left: targetRect.left,
             width: targetRect.width,
             height: targetRect.height,
+            transform: "translate(0, 0) scale(1, 1)",
+            transformOrigin: "top left",
             zIndex: 1000,
-            transition: "all 0.5s cubic-bezier(0.4, 0, 0.2, 1)",
+            transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)", // 稳健的平滑位移
             opacity: 1,
           });
 
-          // 动画完成
           setTimeout(() => {
             onAnimationComplete();
-          }, 500);
+          }, 400);
         });
       });
     } else if (animationState === "collapsing" && displayedCard) {
-      const { sourceRect } = displayedCard;
+      const { sourceRect, targetRect } = displayedCard;
 
-      // 收起动画：移动回源位置并缩小，同时淡出
-      setStyle((prev) => ({
-        ...prev,
-        top: sourceRect.top,
-        left: sourceRect.left,
-        width: sourceRect.width,
-        height: sourceRect.height,
+      const scaleX = sourceRect.width / targetRect.width;
+      const scaleY = sourceRect.height / targetRect.height;
+      const translateX = sourceRect.left - targetRect.left;
+      const translateY = sourceRect.top - targetRect.top;
+
+      setStyle({
+        position: "fixed",
+        top: targetRect.top,
+        left: targetRect.left,
+        width: targetRect.width,
+        height: targetRect.height,
+        transform: `translate(${translateX}px, ${translateY}px) scale(${scaleX}, ${scaleY})`,
+        transformOrigin: "top left",
         transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
         opacity: 0,
-      }));
+      });
 
       setTimeout(() => {
         setIsVisible(false);
