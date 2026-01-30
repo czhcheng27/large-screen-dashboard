@@ -13,7 +13,7 @@ import {
 } from "./chartUtils";
 
 const Chart1 = ({ isExpanded }: ChartComponentProps) => {
-  const { option, config } = getCommonOption(isExpanded, chart1Data.barData1);
+  const { option, config } = getCommonOption(isExpanded);
 
   const finalOption = {
     ...option,
