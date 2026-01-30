@@ -13,7 +13,7 @@ import {
 } from "./chartUtils";
 
 const Chart1 = ({ isExpanded }: ChartComponentProps) => {
-  const { option, config } = getCommonOption(isExpanded);
+  const { option, config } = getCommonOption(isExpanded, chart1Data.barData1);
 
   const finalOption = {
     ...option,
@@ -63,33 +63,24 @@ const Chart1 = ({ isExpanded }: ChartComponentProps) => {
     series: [
       {
         name: "Sales A",
-        // type: "bar",
-        // stack: "total",
-        // barWidth: config.barWidth,
-        // itemStyle: {
-        //   color: "#EB9233",
-        //   borderRadius: 0,
-        // },
         data: chart1Data.barData1,
         ...getNormalBarSeries(isExpanded, "#FFCD91", "#EB9233"),
       },
       {
         name: "Sales B",
-        // type: "bar",
-        // stack: "total",
-        // barWidth: config.barWidth,
-        // itemStyle: {
-        //   color: "#59C7B2",
-        //   borderRadius: [config.barWidth / 3, config.barWidth / 3, 0, 0],
-        // },
         data: chart1Data.barData2,
         ...getNormalBarSeries(isExpanded, "#59C7B2", "#59C7B2"),
+      },
+      {
+        name: "Sales C",
+        data: chart1Data.barData3,
+        ...getNormalBarSeries(isExpanded, "#DD7575", "#EE3532"),
       },
       {
         name: "Growth Rate",
         data: chart1Data.lineData,
         symbol: `image://${Circle.src}`,
-        ...getLineSeries(),
+        ...getLineSeries(isExpanded),
       },
     ],
   };

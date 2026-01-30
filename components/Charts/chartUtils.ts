@@ -1,6 +1,7 @@
 import * as echarts from "echarts";
 import { TooltipParam } from "./types";
 
+
 export interface ChartConfig {
   fontSize: number;
   barWidth: number;
@@ -10,17 +11,19 @@ export interface ChartConfig {
   gridBottom: number;
   gridLeft: number;
   gridRight: number;
+  maxVisibleItems: number;
 }
 
 export const getChartConfig = (isExpanded: boolean): ChartConfig => ({
   fontSize: isExpanded ? 14 : 10,
-  barWidth: isExpanded ? 24 : 10,
+  barWidth: isExpanded ? 18 : 10,
   legendItemWidth: isExpanded ? 25 : 12,
   legendItemHeight: isExpanded ? 14 : 8,
   gridTop: isExpanded ? 80 : 40,
   gridBottom: isExpanded ? 60 : 30,
   gridLeft: 10,
   gridRight: 10,
+  maxVisibleItems: isExpanded ? 18 : 12
 });
 
 const normalCssExtra =
@@ -29,9 +32,8 @@ const centerCssExtra =
   "border: 2px solid #00FFF6; min-width: 280px; background: #05253fff; border-radius: 4px; color: white !important";
 
 export const commonTooltipFormatter = (params: any[], config: any) => {
-  let res = `<div style="margin-bottom: 8px; font-weight: 600; color: #fff; font-size: ${
-    config.fontSize + 2
-  }px;">${params[0].name}</div>`;
+  let res = `<div style="margin-bottom: 8px; font-weight: 600; color: #fff; font-size: ${config.fontSize + 2
+    }px;">${params[0].name}</div>`;
 
   params.forEach((item) => {
     const isLine = item.seriesType === "line";
@@ -75,11 +77,11 @@ export const lineDotColor = new echarts.graphic.LinearGradient(0, 0, 0, 1, [
   { offset: 1, color: "#25BCC9" },
 ]);
 
-export const getLineSeries = (color = lineDotColor, yAxisIndex = 1) => {
+export const getLineSeries = (isExpanded: boolean, color = lineDotColor, yAxisIndex = 1) => {
   return {
     type: "line",
     yAxisIndex,
-    symbolSize: [12, 12],
+    symbolSize: isExpanded ? [12, 12] : [8, 8],
     emphasis: {
       focus: "series",
       disabled: true,
@@ -126,7 +128,7 @@ export const getNormalBarSeries = (
   };
 };
 
-export const getCommonOption = (isExpanded: boolean) => {
+export const getCommonOption = (isExpanded: boolean, dataArray: any[]) => {
   const config = getChartConfig(isExpanded);
   return {
     config,
@@ -199,20 +201,52 @@ export const getCommonOption = (isExpanded: boolean) => {
           splitLine: { show: false },
         },
       ],
-      dataZoom: [
-        { type: "inside", start: 0, end: 100 },
-        {
-          type: "slider",
-          show: isExpanded, // 只有放大时更强调滚动条，或者可以根据数据长度
-          height: 8,
-          bottom: 8,
-          backgroundColor: "rgba(255,255,255,0.03)",
-          fillerColor: "rgba(255, 255, 255, 0.1)",
-          borderColor: "transparent",
-          handleSize: "150%",
-          textStyle: { opacity: 0 },
-        },
-      ],
+      // dataZoom: [
+      //   { type: "inside", start: 0, end: 100 },
+      //   {
+      //     type: "slider",
+      //     show: isExpanded, // 只有放大时更强调滚动条，或者可以根据数据长度
+      //     height: 8,
+      //     bottom: 8,
+      //     backgroundColor: "rgba(255,255,255,0.03)",
+      //     fillerColor: "rgba(255, 255, 255, 0.1)",
+      //     borderColor: "transparent",
+      //     handleSize: "150%",
+      //     textStyle: { opacity: 0 },
+      //   },
+      // ],
+      dataZoom: commonDataZoom(config, dataArray?.length),
     },
   };
+};
+
+const commonDataZoom = (config: ChartConfig, datalength = 0) => {
+  const maxVisibleItems = config.maxVisibleItems;
+  const shouldShowScroll = datalength > maxVisibleItems;
+
+  // 计算显示百分比：当数据量超过最大可见数时，end 值需要调整
+  const endPercent = shouldShowScroll
+    ? (maxVisibleItems / datalength) * 100
+    : 100;
+
+  return [
+    {
+      type: "inside",
+      start: 0,
+      end: endPercent
+    },
+    {
+      type: "slider",
+      show: shouldShowScroll,
+      start: 0,
+      end: endPercent,
+      height: 8,
+      bottom: 8,
+      backgroundColor: "rgba(255,255,255,0.03)",
+      fillerColor: "rgba(255, 255, 255, 0.1)",
+      borderColor: "transparent",
+      handleSize: "150%",
+      textStyle: { opacity: 0 },
+    },
+  ];
 };
