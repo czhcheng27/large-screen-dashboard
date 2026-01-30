@@ -1,5 +1,6 @@
 import * as echarts from "echarts";
 import { TooltipParam } from "./types";
+import { chart1Data } from "@/mockData";
 
 
 export interface ChartConfig {
@@ -128,7 +129,7 @@ export const getNormalBarSeries = (
   };
 };
 
-export const getCommonOption = (isExpanded: boolean, dataArray: any[]) => {
+export const getCommonOption = (isExpanded: boolean) => {
   const config = getChartConfig(isExpanded);
   return {
     config,
@@ -215,7 +216,7 @@ export const getCommonOption = (isExpanded: boolean, dataArray: any[]) => {
       //     textStyle: { opacity: 0 },
       //   },
       // ],
-      dataZoom: commonDataZoom(config, dataArray?.length),
+      dataZoom: commonDataZoom(config, chart1Data?.barData1?.length),
     },
   };
 };
