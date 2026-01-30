@@ -1,7 +1,6 @@
 import { TooltipParam } from "./types";
 
 export interface ChartConfig {
-  isExpanded: boolean;
   fontSize: number;
   barWidth: number;
   legendItemWidth: number;
@@ -23,7 +22,10 @@ export const getChartConfig = (isExpanded: boolean): ChartConfig => ({
   gridRight: 10,
 });
 
-export const commonTooltipFormatter = (params: TooltipParam[], config: ChartConfig) => {
+export const commonTooltipFormatter = (
+  params: TooltipParam[],
+  config: ChartConfig,
+) => {
   let res = `<div style="margin-bottom: 8px; font-weight: 600; color: #fff; font-size: ${
     config.fontSize + 2
   }px;">${params[0].name}</div>`;
@@ -59,12 +61,16 @@ export const getCommonOption = (isExpanded: boolean) => {
         borderWidth: 1,
         padding: [12, 16],
         textStyle: { color: "#fff", fontSize: config.fontSize },
-        formatter: (params: TooltipParam[]) => commonTooltipFormatter(params, config),
+        formatter: (params: TooltipParam[]) =>
+          commonTooltipFormatter(params, config),
       },
       legend: {
         top: 10,
         left: "center", // 居中展示
-        textStyle: { color: "rgba(255, 255, 255, 0.6)", fontSize: config.fontSize },
+        textStyle: {
+          color: "rgba(255, 255, 255, 0.6)",
+          fontSize: config.fontSize,
+        },
         itemWidth: config.legendItemWidth,
         itemHeight: config.legendItemHeight,
         itemGap: isExpanded ? 24 : 12,
@@ -91,13 +97,21 @@ export const getCommonOption = (isExpanded: boolean) => {
         {
           type: "value",
           position: "left",
-          axisLabel: { color: "rgba(255, 255, 255, 0.4)", fontSize: config.fontSize },
-          splitLine: { lineStyle: { color: "rgba(255, 255, 255, 0.05)", type: "dashed" } },
+          axisLabel: {
+            color: "rgba(255, 255, 255, 0.4)",
+            fontSize: config.fontSize,
+          },
+          splitLine: {
+            lineStyle: { color: "rgba(255, 255, 255, 0.05)", type: "dashed" },
+          },
         },
         {
           type: "value",
           position: "right",
-          axisLabel: { color: "rgba(255, 255, 255, 0.4)", fontSize: config.fontSize },
+          axisLabel: {
+            color: "rgba(255, 255, 255, 0.4)",
+            fontSize: config.fontSize,
+          },
           splitLine: { show: false },
         },
       ],
