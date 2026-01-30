@@ -1,3 +1,4 @@
+import * as echarts from "echarts";
 import { TooltipParam } from "./types";
 
 export interface ChartConfig {
@@ -22,25 +23,107 @@ export const getChartConfig = (isExpanded: boolean): ChartConfig => ({
   gridRight: 10,
 });
 
-export const commonTooltipFormatter = (
-  params: TooltipParam[],
-  config: ChartConfig,
-) => {
+const normalCssExtra =
+  "border: 2px solid #00FFF6; min-width: 191px; background: #05253fff; border-radius: 4px; color: white !important";
+const centerCssExtra =
+  "border: 2px solid #00FFF6; min-width: 280px; background: #05253fff; border-radius: 4px; color: white !important";
+
+export const commonTooltipFormatter = (params: any[], config: any) => {
   let res = `<div style="margin-bottom: 8px; font-weight: 600; color: #fff; font-size: ${
     config.fontSize + 2
   }px;">${params[0].name}</div>`;
+
   params.forEach((item) => {
     const isLine = item.seriesType === "line";
+
+    // --- 颜色处理逻辑升级 ---
+    let displayColor = "";
+
+    if (typeof item.color === "string") {
+      displayColor = item.color;
+    } else if (item.color && item.color.colorStops) {
+      // 如果是渐变对象，取第一个渐变点的颜色作为图标颜色
+      displayColor = item.color.colorStops[0].color;
+    } else {
+      // Fallback 兜底方案
+      displayColor = item.seriesName === "Growth Rate" ? "#00FFE4" : "#25BCC9";
+    }
+
+    // 针对 Growth Rate 强制使用青色（匹配你的 legend 和 lineStyle）
+    if (item.seriesName === "Growth Rate") {
+      displayColor = "#00FFE4";
+    }
+
     const icon = isLine
-      ? `<span style="display:inline-block;margin-right:8px;width:12px;height:3px;background-color:${item.color};vertical-align:middle;border-radius:2px;box-shadow: 0 0 8px ${item.color};"></span>`
-      : `<span style="display:inline-block;margin-right:8px;width:10px;height:10px;border-radius:50%;background-color:${item.color};border: 2px solid rgba(255,255,255,0.2);"></span>`;
-    res += `<div style="display:flex;align-items:center;margin-bottom:6px;">
+      ? `<span style="display:inline-block;margin-right:8px;width:12px;height:3px;background-color:${displayColor};vertical-align:middle;border-radius:2px;box-shadow: 0 0 6px ${displayColor};"></span>`
+      : `<span style="display:inline-block;margin-right:8px;width:10px;height:10px;border-radius:50%;background-color:${displayColor};border: 1px solid rgba(255,255,255,0.5);box-shadow: 0 0 4px ${displayColor}66;"></span>`;
+
+    res += `<div style="display:flex;align-items:center;margin-bottom:6px;min-width:140px;">
       ${icon}
-      <span style="flex:1;margin-right:24px;color:rgba(255,255,255,0.7);">${item.seriesName}</span>
-      <span style="font-weight:700;color:#fff;font-family: monospace;">${item.value}</span>
+      <span style="flex:1;margin-right:24px;color:rgba(255,255,255,0.8);font-size:${config.fontSize}px;">${item.seriesName}</span>
+      <span style="font-weight:700;color:#fff;font-family: 'PingFang SC', monospace;font-size:${config.fontSize}px;">
+        ${item.value}${isLine ? " %" : ""}
+      </span>
     </div>`;
   });
   return res;
+};
+
+// line dot color
+export const lineDotColor = new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+  { offset: 0, color: "#20FFE7" },
+  { offset: 1, color: "#25BCC9" },
+]);
+
+export const getLineSeries = (color = lineDotColor, yAxisIndex = 1) => {
+  return {
+    type: "line",
+    yAxisIndex,
+    symbolSize: [12, 12],
+    emphasis: {
+      focus: "series",
+      disabled: true,
+    },
+    itemStyle: { color },
+    lineStyle: {
+      width: 2,
+      type: "solid",
+      color: "#00FFE4",
+    },
+    // 阴影
+    areaStyle: {
+      color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+        { offset: 0, color: "rgba(66,115,246,0.3)" },
+        { offset: 0.5, color: "rgba(13, 51, 100, 0.1)" },
+        { offset: 1, color: "rgba(0,0,0,0.1)" },
+      ]),
+    },
+  };
+};
+
+export const getNormalBarSeries = (
+  isExpanded = false,
+  linearColor1 = "",
+  linearColor2 = "",
+) => {
+  const config = getChartConfig(isExpanded);
+  return {
+    type: "bar",
+    stack: "Sales",
+    barWidth: config.barWidth,
+    emphasis: {
+      focus: "series",
+      disabled: true,
+    },
+    itemStyle: {
+      borderWidth: 2,
+      borderColor: "#02526b",
+      color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+        { offset: 0, color: linearColor1 },
+        { offset: 1, color: linearColor2 },
+      ]),
+    },
+  };
 };
 
 export const getCommonOption = (isExpanded: boolean) => {
@@ -52,6 +135,7 @@ export const getCommonOption = (isExpanded: boolean) => {
       animationDuration: isExpanded ? 0 : 1000, // 放大时减少内部动画以避免冲突
       tooltip: {
         trigger: "axis",
+        extraCssText: isExpanded ? centerCssExtra : normalCssExtra,
         axisPointer: {
           type: "shadow",
           shadowStyle: { color: "rgba(255, 255, 255, 0.05)" },
