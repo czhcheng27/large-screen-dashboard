@@ -1,7 +1,11 @@
 import * as echarts from "echarts";
-import { TooltipParam } from "./types";
+import { TooltipParam, DataPoint } from "./types";
 import { chart1Data } from "@/mockData";
 
+/** 将数值数组格式化为 DataPoint 数组 */
+export const formatData = (data: number[]): DataPoint[] => {
+  return data.map((el) => ({ value: el }));
+};
 
 export interface ChartConfig {
   fontSize: number;
@@ -24,7 +28,7 @@ export const getChartConfig = (isExpanded: boolean): ChartConfig => ({
   gridBottom: isExpanded ? 60 : 30,
   gridLeft: 10,
   gridRight: 10,
-  maxVisibleItems: isExpanded ? 18 : 12
+  maxVisibleItems: isExpanded ? 18 : 12,
 });
 
 const normalCssExtra =
@@ -33,8 +37,9 @@ const centerCssExtra =
   "border: 2px solid #00FFF6; min-width: 280px; background: #05253fff; border-radius: 4px; color: white !important";
 
 export const commonTooltipFormatter = (params: any[], config: any) => {
-  let res = `<div style="margin-bottom: 8px; font-weight: 600; color: #fff; font-size: ${config.fontSize + 2
-    }px;">${params[0].name}</div>`;
+  let res = `<div style="margin-bottom: 8px; font-weight: 600; color: #fff; font-size: ${
+    config.fontSize + 2
+  }px;">${params[0].name}</div>`;
 
   params.forEach((item) => {
     const isLine = item.seriesType === "line";
@@ -78,7 +83,11 @@ export const lineDotColor = new echarts.graphic.LinearGradient(0, 0, 0, 1, [
   { offset: 1, color: "#25BCC9" },
 ]);
 
-export const getLineSeries = (isExpanded: boolean, color = lineDotColor, yAxisIndex = 1) => {
+export const getLineSeries = (
+  isExpanded: boolean,
+  color = lineDotColor,
+  yAxisIndex = 1,
+) => {
   return {
     type: "line",
     yAxisIndex,
@@ -127,6 +136,46 @@ export const getNormalBarSeries = (
       ]),
     },
   };
+};
+
+export const getNormalBarSeriesOverlay = (
+  isExpanded = false,
+  linearColor1 = "",
+  linearColor2 = "",
+) => {
+  return {
+    type: "bar",
+    stack: "y",
+    barWidth: isExpanded ? 22 : 12,
+    // barWidth: 18,
+    barGap: "-91%",
+    tooltip: { show: false },
+    itemStyle: {
+      color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+        { offset: 0, color: linearColor1 },
+        { offset: 1, color: linearColor2 },
+      ]),
+      borderRadius: [8, 8, 0, 0],
+      borderColor: "transparent",
+      borderWidth: null,
+    },
+    emphasis: {
+      focus: "series",
+      disabled: true,
+    },
+  };
+};
+
+export const getTotalData = (array: any[]) => {
+  let res = [];
+  for (let i = 0; i < array[0].length; i++) {
+    let num = 0;
+    for (let j = 0; j < array.length; j++) {
+      num += array[j][i].value;
+    }
+    res.push({ value: num + num * 0.01 });
+  }
+  return res;
 };
 
 export const getCommonOption = (isExpanded: boolean) => {
@@ -202,20 +251,6 @@ export const getCommonOption = (isExpanded: boolean) => {
           splitLine: { show: false },
         },
       ],
-      // dataZoom: [
-      //   { type: "inside", start: 0, end: 100 },
-      //   {
-      //     type: "slider",
-      //     show: isExpanded, // 只有放大时更强调滚动条，或者可以根据数据长度
-      //     height: 8,
-      //     bottom: 8,
-      //     backgroundColor: "rgba(255,255,255,0.03)",
-      //     fillerColor: "rgba(255, 255, 255, 0.1)",
-      //     borderColor: "transparent",
-      //     handleSize: "150%",
-      //     textStyle: { opacity: 0 },
-      //   },
-      // ],
       dataZoom: commonDataZoom(config, chart1Data?.barData1?.length),
     },
   };
@@ -234,7 +269,7 @@ const commonDataZoom = (config: ChartConfig, datalength = 0) => {
     {
       type: "inside",
       start: 0,
-      end: endPercent
+      end: endPercent,
     },
     {
       type: "slider",
