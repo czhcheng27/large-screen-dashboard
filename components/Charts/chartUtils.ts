@@ -10,6 +10,7 @@ export const formatData = (data: number[]): DataPoint[] => {
 export interface ChartConfig {
   fontSize: number;
   barWidth: number;
+  overlayBarWidth: number;
   legendItemWidth: number;
   legendItemHeight: number;
   gridTop: number;
@@ -17,18 +18,31 @@ export interface ChartConfig {
   gridLeft: number;
   gridRight: number;
   maxVisibleItems: number;
+  yAxisTitleFontSize: number;
+  yAxisTitlePadding: number[];
+  legendItemGap: number;
+  xAxisLabelRotate: number;
+  animationDuration: number;
+  tooltipCss: string;
 }
 
 export const getChartConfig = (isExpanded: boolean): ChartConfig => ({
   fontSize: isExpanded ? 14 : 10,
-  barWidth: isExpanded ? 18 : 10,
+  barWidth: isExpanded ? 20 : 15,
+  overlayBarWidth: isExpanded ? 24 : 18,
   legendItemWidth: isExpanded ? 25 : 12,
   legendItemHeight: isExpanded ? 14 : 8,
-  gridTop: isExpanded ? 80 : 40,
-  gridBottom: isExpanded ? 60 : 30,
-  gridLeft: 10,
-  gridRight: 10,
-  maxVisibleItems: isExpanded ? 18 : 12,
+  gridTop: isExpanded ? 90 : 50,
+  gridBottom: isExpanded ? 70 : 40,
+  gridLeft: isExpanded ? 30 : 16,
+  gridRight: isExpanded ? 30 : 16,
+  maxVisibleItems: isExpanded ? 18 : 11,
+  yAxisTitleFontSize: isExpanded ? 16 : 12,
+  yAxisTitlePadding: [0, -10, 8, 0],
+  legendItemGap: isExpanded ? 24 : 12,
+  xAxisLabelRotate: isExpanded ? 0 : 45,
+  animationDuration: isExpanded ? 0 : 1000,
+  tooltipCss: isExpanded ? centerCssExtra : normalCssExtra,
 });
 
 const normalCssExtra =
@@ -143,10 +157,11 @@ export const getNormalBarSeriesOverlay = (
   linearColor1 = "",
   linearColor2 = "",
 ) => {
+  const config = getChartConfig(isExpanded);
   return {
     type: "bar",
     stack: "y",
-    barWidth: isExpanded ? 22 : 12,
+    barWidth: config.overlayBarWidth,
     // barWidth: 18,
     barGap: "-91%",
     tooltip: { show: false },
@@ -184,10 +199,10 @@ export const getCommonOption = (isExpanded: boolean) => {
     config,
     option: {
       backgroundColor: "transparent",
-      animationDuration: isExpanded ? 0 : 1000, // 放大时减少内部动画以避免冲突
+      animationDuration: config.animationDuration,
       tooltip: {
         trigger: "axis",
-        extraCssText: isExpanded ? centerCssExtra : normalCssExtra,
+        extraCssText: config.tooltipCss,
         axisPointer: {
           type: "shadow",
           shadowStyle: { color: "rgba(255, 255, 255, 0.05)" },
@@ -198,18 +213,18 @@ export const getCommonOption = (isExpanded: boolean) => {
         padding: [12, 16],
         textStyle: { color: "#fff", fontSize: config.fontSize },
         formatter: (params: TooltipParam[]) =>
-          commonTooltipFormatter(params, config),
+          commonTooltipFormatter(params, { fontSize: config.fontSize }),
       },
       legend: {
         top: 10,
-        left: "center", // 居中展示
+        left: "center",
         textStyle: {
           color: "rgba(255, 255, 255, 0.6)",
           fontSize: config.fontSize,
         },
         itemWidth: config.legendItemWidth,
         itemHeight: config.legendItemHeight,
-        itemGap: isExpanded ? 24 : 12,
+        itemGap: config.legendItemGap,
       },
       grid: {
         top: config.gridTop,
@@ -225,7 +240,7 @@ export const getCommonOption = (isExpanded: boolean) => {
           color: "rgba(255, 255, 255, 0.4)",
           fontSize: config.fontSize,
           interval: 0,
-          rotate: isExpanded ? 0 : 45,
+          rotate: config.xAxisLabelRotate,
         },
         axisLine: { lineStyle: { color: "rgba(255, 255, 255, 0.1)" } },
       },
@@ -233,6 +248,13 @@ export const getCommonOption = (isExpanded: boolean) => {
         {
           type: "value",
           position: "left",
+          name: "Sales Volume",
+          nameTextStyle: {
+            fontSize: config.yAxisTitleFontSize,
+            fontWeight: 600,
+            color: "#fff",
+            padding: config.yAxisTitlePadding,
+          },
           axisLabel: {
             color: "rgba(255, 255, 255, 0.4)",
             fontSize: config.fontSize,
@@ -244,6 +266,13 @@ export const getCommonOption = (isExpanded: boolean) => {
         {
           type: "value",
           position: "right",
+          name: "Growth",
+          nameTextStyle: {
+            fontSize: config.yAxisTitleFontSize,
+            fontWeight: 600,
+            color: "#fff",
+            padding: config.yAxisTitlePadding,
+          },
           axisLabel: {
             color: "rgba(255, 255, 255, 0.4)",
             fontSize: config.fontSize,

@@ -177,16 +177,7 @@ const Chart1 = ({ isExpanded }: ChartComponentProps) => {
       ...option.xAxis,
       data: chart1Data.categories,
     },
-    yAxis: [
-      {
-        ...option.yAxis[0],
-        name: isExpanded ? "Sales Volume" : "",
-      },
-      {
-        ...option.yAxis[1],
-        name: isExpanded ? "Growth" : "",
-      },
-    ],
+    yAxis: option.yAxis,
     series: seriesData.reverse(),
   };
 
