@@ -234,6 +234,83 @@ export const get3dBarSeriesCap = (color: string, isExpanded = false) => {
   };
 };
 
+export const format3DData = (list: { proportion: string, standardType: string }[]) => {
+  const color = [
+    "#45B0CC",
+    "#1557A7",
+    "#A1DAF4",
+    "#F8C363",
+    "#F79654",
+    "#D64C2F",
+  ];
+  return list.map((item, index) => {
+    return {
+      name: item.standardType,
+      y: parseInt(item.proportion),
+      color: color[index],
+    };
+  });
+};
+
+export const common3dPie = (innerSize = 100, depth = 45) => {
+  return {
+    credits: {
+      style: {
+        color: "transparent",
+      },
+    },
+    chart: {
+      type: "pie",
+      backgroundColor: "transparent",
+      options3d: {
+        enabled: true,
+        alpha: 50,
+        beta: 0,
+      },
+    },
+    title: {
+      text: undefined,
+    },
+    plotOptions: {
+      pie: {
+        innerSize,
+        depth,
+        dataLabels: {
+          style: {
+            fontSize: "14px",
+          },
+          connectorWidth: 2,
+          distance: 45,
+          connectorColor: "#ffffff4d",
+          color: "#41A6FC",
+          connectorShape: "crookedLine",
+        },
+      },
+    },
+    tooltip: {
+      backgroundColor: "#05253F",
+      borderColor: "#00FFF6",
+      borderWidth: 2,
+      padding: 10,
+      style: {
+        color: "#ffffff",
+        fontSize: "14px",
+      },
+      headerFormat:
+        '<span style="font-size: 16px;line-height: 24;padding-bottom: 10px;">{point.key}</span><br/>',
+      pointFormat:
+        '<span style="color:{point.color};font-size: 14px;">●</span> {series.name}: <b>{point.y}</b><br/>',
+    },
+    series: [
+      {
+        type: "pie",
+        name: "Proportion",
+        data: [],
+      },
+    ],
+  };
+};
+
 export const getCommonOption = (isExpanded: boolean) => {
   const config = getChartConfig(isExpanded);
   return {

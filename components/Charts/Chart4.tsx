@@ -1,55 +1,41 @@
 "use client";
 
-import ReactECharts from "echarts-for-react";
+import { useEffect, useRef } from "react";
+import Highcharts from "highcharts";
+import Highcharts3D from "highcharts/highcharts-3d";
 import { ChartComponentProps } from "./ChartCard";
+import { common3dPie, format3DData } from "./chartUtils";
 import css from "./ChartContent.module.scss";
-import { chart1Data } from "@/mockData";
-import { getCommonOption } from "./chartUtils";
+
+Highcharts3D(Highcharts);
 
 const Chart4 = ({ isExpanded }: ChartComponentProps) => {
-  const { option, config } = getCommonOption(isExpanded);
+  const containerRef = useRef<HTMLDivElement>(null);
 
-  const finalOption = {
-    ...option,
-    legend: {
-      ...option.legend,
-      data: [
-        { name: "Revenue", icon: "circle" },
-        { name: "Cost", icon: "circle" },
-        { name: "Profit %", icon: "line" },
+  // 响应式配置
+  const innerSize = isExpanded ? 100 : 50;
+  const depth = isExpanded ? 90 : 45;
+
+  useEffect(() => {
+    Highcharts.chart(containerRef.current!, {
+      ...(common3dPie(innerSize, depth) as Highcharts.Options),
+      series: [
+        {
+          type: "pie",
+          name: "Proportion",
+          data: format3DData([
+            { proportion: "30%", standardType: "Type I" },
+            { proportion: "30%", standardType: "Type II" },
+            { proportion: "40%", standardType: "Type III" },
+          ]),
+        } as Highcharts.SeriesPieOptions,
       ],
-    },
-    xAxis: { ...option.xAxis, data: chart1Data.categories },
-    series: [
-      {
-        name: "Revenue",
-        type: "bar",
-        stack: "r",
-        barWidth: config.barWidth,
-        itemStyle: { color: "#3ba272", borderRadius: 0 },
-        data: chart1Data.barData1,
-      },
-      {
-        name: "Cost",
-        type: "bar",
-        stack: "r",
-        itemStyle: { color: "#5470c6", borderRadius: [4, 4, 0, 0] },
-        data: chart1Data.barData2.map((v) => v * 0.5),
-      },
-      {
-        name: "Profit %",
-        type: "line",
-        yAxisIndex: 1,
-        smooth: true,
-        itemStyle: { color: "#fac858" },
-        data: chart1Data.lineData,
-      },
-    ],
-  };
+    } as Highcharts.Options);
+  }, [innerSize, depth]);
 
   return (
     <div className={`${css.chartContent} ${isExpanded ? css.expanded : ""}`}>
-      <ReactECharts option={finalOption} style={{ height: "100%", width: "100%" }} theme="dark" notMerge={true} />
+      <div ref={containerRef} style={{ width: "100%", height: "100%" }} />
     </div>
   );
 };
