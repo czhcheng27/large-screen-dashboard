@@ -1,6 +1,7 @@
 import * as echarts from "echarts";
-import { TooltipParam, DataPoint } from "./types";
+import { LinearGradient } from "echarts/types/src/export/api/graphic.js";
 import { chart1Data } from "@/mockData";
+import { TooltipParam, DataPoint } from "./types";
 
 /** 将数值数组格式化为 DataPoint 数组 */
 export const formatData = (data: number[]): DataPoint[] => {
@@ -13,6 +14,7 @@ export interface ChartConfig {
   overlayBarWidth: number;
   legendItemWidth: number;
   legendItemHeight: number;
+  legendLineHeight: number;
   gridTop: number;
   gridBottom: number;
   gridLeft: number;
@@ -32,6 +34,7 @@ export const getChartConfig = (isExpanded: boolean): ChartConfig => ({
   overlayBarWidth: isExpanded ? 24 : 15,
   legendItemWidth: isExpanded ? 25 : 12,
   legendItemHeight: isExpanded ? 14 : 8,
+  legendLineHeight: isExpanded ? 14 : 10,
   gridTop: isExpanded ? 90 : 80,
   gridBottom: isExpanded ? 30 : 20,
   gridLeft: isExpanded ? 30 : 16,
@@ -192,6 +195,45 @@ export const getTotalData = (array: any[]) => {
   return res;
 };
 
+export const get3dBarSeries = (color: LinearGradient, isExpanded = false) => {
+  const config = getChartConfig(isExpanded);
+  return {
+    type: "bar",
+    barWidth: config.barWidth,
+    emphasis: {
+      focus: "series",
+      disabled: true,
+    },
+    color,
+    itemStyle: {
+      borderRadius: [0, 0, 2, 2], // 让柱形上下变成圆角
+      opacity: 1,
+    },
+  };
+};
+
+export const get3dBarSeriesCap = (color: string, isExpanded = false) => {
+  const config = getChartConfig(isExpanded);
+  const capSize = [config.barWidth, (config.barWidth) * 0.25];
+  return {
+    name: "结算金额",
+    symbolOffset: [0, -2], // 椭圆水平偏移,垂直偏移. 因为不一定正好盖住柱形,所以可能要移动一点点
+    tooltip: {
+      show: false,
+    },
+    type: "pictorialBar",
+    color,
+    itemStyle: {
+      opacity: 0.75,
+    },
+    symbol: "circle",
+    symbolSize: capSize,
+    symbolPosition: "end", // 图形边缘与柱子结束的地方内切。
+    // data: settleAmountCap, // 数据要跟主体柱形一致
+    z: 4, // 数值越大,层级越高,可以盖住下面的图形
+  };
+};
+
 export const getCommonOption = (isExpanded: boolean) => {
   const config = getChartConfig(isExpanded);
   return {
@@ -217,10 +259,16 @@ export const getCommonOption = (isExpanded: boolean) => {
       legend: {
         top: 10,
         left: "center",
+        orient: "horizontal",
+        x: "center",
+        y: "top",
         textStyle: {
-          color: "rgba(255, 255, 255, 0.6)",
+          color: "#1F6AAB",
           fontSize: config.fontSize,
+          lineHeight: config.legendLineHeight,
+          fontWeight: "bold",
         },
+        selectedMode: false,
         itemWidth: config.legendItemWidth,
         itemHeight: config.legendItemHeight,
         itemGap: config.legendItemGap,
@@ -250,12 +298,12 @@ export const getCommonOption = (isExpanded: boolean) => {
           name: "Sales Volume",
           nameTextStyle: {
             fontSize: config.yAxisTitleFontSize,
-            fontWeight: 600,
+            fontWeight: 500,
             color: "#fff",
             padding: config.yAxisTitlePadding,
           },
           axisLabel: {
-            color: "rgba(255, 255, 255, 0.4)",
+            color: "#fff",
             fontSize: config.fontSize,
           },
           splitLine: {
@@ -268,12 +316,12 @@ export const getCommonOption = (isExpanded: boolean) => {
           name: "Growth",
           nameTextStyle: {
             fontSize: config.yAxisTitleFontSize,
-            fontWeight: 600,
+            fontWeight: 500,
             color: "#fff",
             padding: config.yAxisTitlePadding,
           },
           axisLabel: {
-            color: "rgba(255, 255, 255, 0.4)",
+            color: "#fff",
             fontSize: config.fontSize,
           },
           splitLine: { show: false },

@@ -2,9 +2,9 @@
 
 import ReactECharts from "echarts-for-react";
 import * as echarts from "echarts";
+import { chart1Data } from "@/mockData";
 import { ChartComponentProps } from "./ChartCard";
 import css from "./ChartContent.module.scss";
-import { chart1Data } from "@/mockData";
 import Circle from "../../public/circle.png";
 import {
   getCommonOption,
@@ -145,19 +145,6 @@ const Chart1 = ({ isExpanded }: ChartComponentProps) => {
     },
     legend: {
       ...option.legend,
-      orient: "horizontal",
-      x: "center",
-      y: "top",
-      itemHeight: isExpanded ? 14 : 10,
-      itemWidth: isExpanded ? 14 : 10,
-      itemGap: 24,
-      selectedMode: false,
-      textStyle: {
-        fontSize: isExpanded ? 14 : 10,
-        lineHeight: isExpanded ? 14 : 10,
-        fontWeight: "bold",
-        color: "#1F6AAB",
-      },
       data: [
         { name: "Sales A", icon: "circle" },
         { name: "Sales B", icon: "circle" },
