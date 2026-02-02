@@ -2,8 +2,9 @@
 
 import { mockChartData3 } from "@/mockData";
 import { ChartComponentProps } from "./ChartCard";
-import css from "./Chart3.module.scss";
+import AutoScrollList from "../AutoScrollList";
 import { Chart3Item } from "./types";
+import css from "./Chart3.module.scss";
 
 const Chart3 = ({ isExpanded }: ChartComponentProps) => {
   const renderEachRow = (el: Chart3Item, index: number) => {
@@ -24,15 +25,16 @@ const Chart3 = ({ isExpanded }: ChartComponentProps) => {
     );
   };
 
+  // 列表内容
+  const listContent = mockChartData3.map((el, index) => (
+    <div key={index} className={css.each_row}>
+      {renderEachRow(el, index)}
+    </div>
+  ));
+
   return (
     <div className={`${css.chart3Content} ${isExpanded ? css.expanded : ""}`}>
-      {mockChartData3.map((el, index) => {
-        return (
-          <div key={index} className={css.each_row}>
-            {renderEachRow(el, index)}
-          </div>
-        );
-      })}
+      <AutoScrollList speed={0.5}>{listContent}</AutoScrollList>
     </div>
   );
 };
