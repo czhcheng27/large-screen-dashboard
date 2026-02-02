@@ -28,12 +28,12 @@ export interface ChartConfig {
 
 export const getChartConfig = (isExpanded: boolean): ChartConfig => ({
   fontSize: isExpanded ? 14 : 10,
-  barWidth: isExpanded ? 20 : 15,
-  overlayBarWidth: isExpanded ? 24 : 18,
+  barWidth: isExpanded ? 20 : 12,
+  overlayBarWidth: isExpanded ? 24 : 15,
   legendItemWidth: isExpanded ? 25 : 12,
   legendItemHeight: isExpanded ? 14 : 8,
-  gridTop: isExpanded ? 90 : 50,
-  gridBottom: isExpanded ? 70 : 40,
+  gridTop: isExpanded ? 90 : 80,
+  gridBottom: isExpanded ? 30 : 20,
   gridLeft: isExpanded ? 30 : 16,
   gridRight: isExpanded ? 30 : 16,
   maxVisibleItems: isExpanded ? 18 : 11,
@@ -51,9 +51,8 @@ const centerCssExtra =
   "border: 2px solid #00FFF6; min-width: 280px; background: #05253fff; border-radius: 4px; color: white !important";
 
 export const commonTooltipFormatter = (params: any[], config: any) => {
-  let res = `<div style="margin-bottom: 8px; font-weight: 600; color: #fff; font-size: ${
-    config.fontSize + 2
-  }px;">${params[0].name}</div>`;
+  let res = `<div style="margin-bottom: 8px; font-weight: 600; color: #fff; font-size: ${config.fontSize + 2
+    }px;">${params[0].name}</div>`;
 
   params.forEach((item) => {
     const isLine = item.seriesType === "line";
