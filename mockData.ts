@@ -1,3 +1,5 @@
+import { Chart3Item } from "./components/Charts/types";
+
 export const chart1Data = {
   categories: [
     "Jan",
@@ -42,3 +44,62 @@ export const chart1Data = {
     140, 150, 160, 170, 180, 190, 200,
   ],
 };
+
+export const mockChartData3: Chart3Item[] = [
+  {
+    equipNo: "C100",
+    equipName: "Equipment1",
+    equipNumber: 18,
+    equipRate: "37",
+    org: "org1",
+  },
+  {
+    equipNo: "C200",
+    equipName: "Equipment2",
+    equipNumber: 13,
+    equipRate: "45",
+    org: "org2",
+  },
+  {
+    equipNo: "C300",
+    equipName: "Equipment3",
+    equipNumber: 23,
+    equipRate: "56",
+    org: "org3",
+  },
+  {
+    equipNo: "C400",
+    equipName: "Equipment4",
+    equipNumber: 33,
+    equipRate: "98",
+    org: "org4",
+  },
+  {
+    equipNo: "C500",
+    equipName: "Equipment5",
+    equipNumber: 33,
+    equipRate: "13",
+    org: "org5",
+  },
+  {
+    equipNo: "C600",
+    equipName: "Equipment6",
+    equipNumber: 41,
+    equipRate: "74",
+    org: "org6",
+  },
+  {
+    equipNo: "C700",
+    equipName: "Equipment7",
+    equipNumber: 23,
+    equipRate: "63",
+    org: "org7",
+  },
+  {
+    equipNo: "C800",
+    equipName: "Equipment8",
+    equipNumber: 24,
+    equipRate: "23",
+    org: "org8",
+  },
+];

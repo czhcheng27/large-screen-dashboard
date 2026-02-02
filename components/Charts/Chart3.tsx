@@ -1,55 +1,38 @@
 "use client";
 
-import ReactECharts from "echarts-for-react";
+import { mockChartData3 } from "@/mockData";
 import { ChartComponentProps } from "./ChartCard";
-import css from "./ChartContent.module.scss";
-import { chart1Data } from "@/mockData";
-import { getCommonOption } from "./chartUtils";
+import css from "./Chart3.module.scss";
+import { Chart3Item } from "./types";
 
 const Chart3 = ({ isExpanded }: ChartComponentProps) => {
-  const { option, config } = getCommonOption(isExpanded);
-
-  const finalOption = {
-    ...option,
-    legend: {
-      ...option.legend,
-      data: [
-        { name: "Inbound", icon: "circle" },
-        { name: "Outbound", icon: "circle" },
-        { name: "Storage Rate", icon: "line" },
-      ],
-    },
-    xAxis: { ...option.xAxis, data: chart1Data.categories },
-    series: [
-      {
-        name: "Inbound",
-        type: "bar",
-        stack: "s",
-        barWidth: config.barWidth,
-        itemStyle: { color: "#fc8452", borderRadius: 0 },
-        data: chart1Data.barData1.map((v) => v * 1.1),
-      },
-      {
-        name: "Outbound",
-        type: "bar",
-        stack: "s",
-        itemStyle: { color: "#9a60b4", borderRadius: [4, 4, 0, 0] },
-        data: chart1Data.barData2.map((v) => v * 0.9),
-      },
-      {
-        name: "Storage Rate",
-        type: "line",
-        yAxisIndex: 1,
-        smooth: true,
-        itemStyle: { color: "#ea7ccc" },
-        data: chart1Data.lineData.map((v) => v * 0.5),
-      },
-    ],
+  const renderEachRow = (el: Chart3Item, index: number) => {
+    const { equipNumber, equipName, equipRate } = el;
+    return (
+      <>
+        <div
+          className={`${css.rowNum} ${
+            index < 3 ? css[`rowNum${index + 1}`] : css.rowNum4
+          }`}
+        >{`${index < 9 ? "0" : ""}${index + 1}`}</div>
+        <div className={css.equipName}>{equipName}</div>
+        <div className={css.equipNum}>Equip Num: {equipNumber}</div>
+        <div className={css.equipRate}>
+          Rate: <span>{equipRate}</span>
+        </div>
+      </>
+    );
   };
 
   return (
-    <div className={`${css.chartContent} ${isExpanded ? css.expanded : ""}`}>
-      <ReactECharts option={finalOption} style={{ height: "100%", width: "100%" }} theme="dark" notMerge={true} />
+    <div className={`${css.chart3Content} ${isExpanded ? css.expanded : ""}`}>
+      {mockChartData3.map((el, index) => {
+        return (
+          <div key={index} className={css.each_row}>
+            {renderEachRow(el, index)}
+          </div>
+        );
+      })}
     </div>
   );
 };

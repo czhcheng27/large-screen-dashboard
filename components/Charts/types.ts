@@ -35,3 +35,11 @@ export interface BarSeriesItem {
   z?: number;
   [key: string]: unknown;
 }
+
+export interface Chart3Item {
+  equipNo: string;
+  equipName: string;
+  equipNumber: number;
+  equipRate: string;
+  org: string;
+}

@@ -284,7 +284,7 @@ export const getCommonOption = (isExpanded: boolean) => {
         type: "category",
         axisTick: { show: false },
         axisLabel: {
-          color: "rgba(255, 255, 255, 0.4)",
+          color: "white",
           fontSize: config.fontSize,
           interval: 0,
           rotate: config.xAxisLabelRotate,

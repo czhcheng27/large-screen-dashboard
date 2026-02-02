@@ -1,0 +1,124 @@
+.chart3Content {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  padding: 8px;
+  box-sizing: border-box;
+
+  /* Hide scrollbar */
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.each_row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px; // Reduced from 8px
+  padding: 6px 10px; // Reduced from 8px
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  color: #fff;
+  transition: all 0.3s ease;
+  flex-shrink: 0; // Prevent rows from squashing
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+}
+
+.rowNum {
+  width: 22px; // Slightly smaller
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: #fff;
+  background-size: 100% 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+  margin-right: 10px;
+  font-size: 11px;
+  flex-shrink: 0;
+}
+
+// Background images for ranks
+.rowNum1 {
+  background-image: url("/row01.png");
+}
+.rowNum2 {
+  background-image: url("/row02.png");
+}
+.rowNum3 {
+  background-image: url("/row03.png");
+}
+.rowNum4 {
+  background-image: url("/row04.png");
+}
+
+.equipName {
+  flex: 3;
+  font-size: 13px; // Slightly smaller
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.equipNum {
+  flex: 3;
+  font-size: 11px;
+  text-align: right;
+  margin-right: 8px;
+}
+
+.equipRate {
+  flex: 2;
+  font-size: 11px;
+  text-align: right;
+
+  span {
+    color: #4facfe;
+    font-weight: bold;
+    margin-left: 2px;
+  }
+}
+
+// Expanded State (Middle Area)
+.expanded {
+  padding: 24px;
+
+  .each_row {
+    margin-bottom: 12px;
+    padding: 12px 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  }
+
+  .rowNum {
+    width: 42px;
+    height: 42px;
+    font-size: 18px;
+    margin-right: 20px;
+  }
+
+  .equipName {
+    font-size: 18px;
+    color: #fff;
+  }
+
+  .equipNum {
+    font-size: 15px;
+  }
+
+  .equipRate {
+    font-size: 15px;
+
+    span {
+      font-size: 17px;
+    }
+  }
+}

@@ -1,8 +1,9 @@
 .dashContainer {
   width: 100%;
-  height: calc(100% - 110px);
+  height: calc(100vh - 110px);
   padding: 0 24px 24px;
   display: grid;
+  box-sizing: border-box;
   /* Columns: left 25% | center 50% | right 25% (use minmax to avoid overflow)
       gap set to 6px per design */
   grid-template-columns: minmax(0, 24%) minmax(0, 52%) minmax(0, 24%);
@@ -12,15 +13,31 @@
 .leftSide,
 .rightSide {
   display: grid;
-  grid-template-rows: 1fr 1fr;
+  grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
   gap: 12px;
+  min-height: 0;
+  height: 100%;
+
+  & > div {
+    min-height: 0;
+    min-width: 0;
+    height: 100%;
+  }
 }
 
 .center {
   /* Vertical layout: top = 2fr (2/3), bottom = 1fr (1/3) */
   display: grid;
-  grid-template-rows: 2fr 1fr;
+  grid-template-rows: 2fr 1fr; // Change back to standard fr to maintain proportions
   gap: 16px;
+  min-height: 0;
+  height: 100%; // Ensure it fills parent
+
+  & > div {
+    min-height: 0;
+    min-width: 0;
+    height: 100%; // Ensure children fill grid area
+  }
 }
 
 .centerTop {
@@ -46,8 +63,10 @@
 
 .centerBottom {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 16px;
+  min-height: 0;
+  height: 100%;
 }
 
 .centerBottom > div {
@@ -55,4 +74,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
 }
