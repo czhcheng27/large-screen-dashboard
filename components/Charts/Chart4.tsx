@@ -7,7 +7,9 @@ import { ChartComponentProps } from "./ChartCard";
 import { common3dPie, format3DData } from "./chartUtils";
 import css from "./ChartContent.module.scss";
 
-Highcharts3D(Highcharts);
+if (typeof window !== "undefined") {
+  Highcharts3D(Highcharts);
+}
 
 const Chart4 = ({ isExpanded }: ChartComponentProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
