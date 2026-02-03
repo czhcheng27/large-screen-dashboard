@@ -43,3 +43,8 @@ export interface Chart3Item {
   equipRate: string;
   org: string;
 }
+
+export interface Chart6DataItem {
+  title: string;
+  value: string;
+}

@@ -3,13 +3,34 @@
 import { useState } from "react";
 import ReactECharts from "echarts-for-react";
 import { ChartComponentProps } from "./ChartCard";
-import css from "./ChartContent.module.scss";
+import css from "./Chart6.module.scss";
 import { chart1Data, dataBJ, dataGZ, dataSH } from "@/mockData";
 import { getCommonOption } from "./chartUtils";
+import { Chart6DataItem } from "./types";
+
+const sideData7 = [
+  {
+    title: "Sum Num",
+    value: "1280",
+  },
+  {
+    title: "Equiped",
+    value: "769",
+  },
+  {
+    title: "Not Perfect",
+    value: "20",
+  },
+  "divider",
+  {
+    title: "Overall",
+    value: "92.5%",
+  },
+];
 
 const Chart6 = ({ isExpanded }: ChartComponentProps) => {
   const { option, config } = getCommonOption(isExpanded);
-  const [selectedCity, setSelectedCity] = useState<string>("Beijing");
+  const [selectedCity, setSelectedCity] = useState<string>("ON");
 
   const lineStyle = {
     width: 1,
@@ -18,12 +39,12 @@ const Chart6 = ({ isExpanded }: ChartComponentProps) => {
 
   // 根据选中的城市设置不同的颜色
   const cityColors: Record<string, string> = {
-    Beijing: "#59C7B2",
-    Shanghai: "#F9713C",
-    Guangzhou: "#B3E4A1",
+    ON: "#00fcf9",
+    BC: "#F9713C",
+    AB: "#B3E4A1",
   };
 
-  const currentColor = cityColors[selectedCity] || "#59C7B2";
+  const currentColor = cityColors[selectedCity] || "#00fcf9";
 
   // 响应式配置
   const fontSize = isExpanded ? 16 : 12;
@@ -35,7 +56,7 @@ const Chart6 = ({ isExpanded }: ChartComponentProps) => {
     title: undefined,
     legend: {
       bottom: isExpanded ? 10 : 5,
-      data: ["Beijing", "Shanghai", "Guangzhou"],
+      data: ["ON", "BC", "AB"],
       itemGap: isExpanded ? 30 : 20,
       textStyle: {
         color: "#fff",
@@ -43,9 +64,9 @@ const Chart6 = ({ isExpanded }: ChartComponentProps) => {
       },
       selectedMode: "single",
       selected: {
-        Beijing: selectedCity === "Beijing",
-        Shanghai: selectedCity === "Shanghai",
-        Guangzhou: selectedCity === "Guangzhou",
+        ON: selectedCity === "ON",
+        BC: selectedCity === "BC",
+        AB: selectedCity === "AB",
       },
     },
     radar: {
@@ -89,13 +110,13 @@ const Chart6 = ({ isExpanded }: ChartComponentProps) => {
     },
     series: [
       {
-        name: "Beijing",
+        name: "ON",
         type: "radar",
         lineStyle: lineStyle,
         data: dataBJ,
         symbol: "none",
         itemStyle: {
-          color: cityColors.Beijing,
+          color: cityColors.ON,
         },
         areaStyle: {
           opacity: 0.1,
@@ -110,13 +131,13 @@ const Chart6 = ({ isExpanded }: ChartComponentProps) => {
         },
       },
       {
-        name: "Shanghai",
+        name: "BC",
         type: "radar",
         lineStyle: lineStyle,
         data: dataSH,
         symbol: "none",
         itemStyle: {
-          color: cityColors.Shanghai,
+          color: cityColors.BC,
         },
         areaStyle: {
           opacity: 0.05,
@@ -131,13 +152,13 @@ const Chart6 = ({ isExpanded }: ChartComponentProps) => {
         },
       },
       {
-        name: "Guangzhou",
+        name: "AB",
         type: "radar",
         lineStyle: lineStyle,
         data: dataGZ,
         symbol: "none",
         itemStyle: {
-          color: cityColors.Guangzhou,
+          color: cityColors.AB,
         },
         areaStyle: {
           opacity: 0.05,
@@ -154,19 +175,49 @@ const Chart6 = ({ isExpanded }: ChartComponentProps) => {
     ],
   };
 
+  const renderLeft = () => {
+    return (
+      <>
+        {sideData7.map((el, index) => {
+          const isDivider = index == 3;
+          return (
+            <div key={index} className={isDivider ? css.divide : css.eachBlock}>
+              {isDivider ? null : renderEachBlock(el as Chart6DataItem)}
+            </div>
+          );
+        })}
+      </>
+    );
+  };
+
+  const renderEachBlock = (el: Chart6DataItem) => {
+    const { title, value } = el;
+    return (
+      <>
+        <div className={css.title}>{title}</div>
+        <div className={css.value}>{value}</div>
+      </>
+    );
+  };
+
   return (
-    <div className={`${css.chartContent} ${isExpanded ? css.expanded : ""}`}>
-      <ReactECharts
-        option={finalOption}
-        style={{ height: "100%", width: "100%" }}
-        theme="dark"
-        notMerge={true}
-        onEvents={{
-          legendselectchanged: (params: any) => {
-            setSelectedCity(params.name);
-          },
-        }}
-      />
+    <div className={`${css.chart6Content} ${isExpanded ? css.expanded : ""}`}>
+      <div className="w-full h-full grid grid-cols-12">
+        <div className={`col-span-3 ${css.left}`}>{renderLeft()}</div>
+        <div className="col-span-9">
+          <ReactECharts
+            option={finalOption}
+            style={{ height: "100%", width: "100%" }}
+            theme="dark"
+            notMerge={true}
+            onEvents={{
+              legendselectchanged: (params: any) => {
+                setSelectedCity(params.name);
+              },
+            }}
+          />
+        </div>
+      </div>
     </div>
   );
 };
