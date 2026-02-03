@@ -225,3 +225,66 @@ export const dataAB = [
   [106, 116, 188, 3.628, 101, 16, 30],
   [118, 50, 0, 1.383, 76, 11, 31]
 ];
+
+export const scatterData = [
+  {
+    firstSystem: "0227",
+    firstSystemName: "System 1",
+    abilityScore: 12.17,
+    tacticScore: 9,
+  },
+  {
+    firstSystem: "0310",
+    firstSystemName: "System 2",
+    abilityScore: 89.09,
+    tacticScore: 9.95,
+  },
+  {
+    firstSystem: "0301",
+    firstSystemName: "System 3",
+    abilityScore: 88.62,
+    tacticScore: 6.8,
+  },
+  {
+    firstSystem: "0231",
+    firstSystemName: "System 4",
+    abilityScore: 98.63,
+    tacticScore: 6.51,
+  },
+  {
+    firstSystem: "0248",
+    firstSystemName: "System 5",
+    abilityScore: 69.4,
+    tacticScore: 5.15,
+  },
+  {
+    firstSystem: "0249",
+    firstSystemName: "System 6",
+    abilityScore: 30,
+    tacticScore: 3.15,
+  },
+  {
+    firstSystem: "0250",
+    firstSystemName: "System 7",
+    abilityScore: 10,
+    tacticScore: 1.15,
+  },
+  {
+    firstSystem: "0251",
+    firstSystemName: "System 8",
+    abilityScore: 70,
+    tacticScore: 2.5,
+  },
+  {
+    firstSystem: "0252",
+    firstSystemName: "System 9",
+    abilityScore: 40,
+    tacticScore: 7,
+  },
+  {
+    firstSystem: "0253",
+    firstSystemName: "System 10",
+    abilityScore: 90,
+    tacticScore: 1,
+  },
+]

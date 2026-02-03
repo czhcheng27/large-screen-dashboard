@@ -48,3 +48,10 @@ export interface Chart6DataItem {
   title: string;
   value: string;
 }
+
+export interface ScatterDataItem {
+  firstSystem: string;
+  firstSystemName: string;
+  abilityScore: number;
+  tacticScore: number;
+}
