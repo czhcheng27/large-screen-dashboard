@@ -34,16 +34,27 @@ $scaleSize: var(--scaleSize, 1);
   flex-direction: column;
 
   .title {
-    // font-size: 12px;
     font-size: calc($scaleSize * 0.53vw);
     color: white;
   }
 
   .value {
     font-family: dsDig;
-    // font-size: 20px;
     font-size: calc($scaleSize * 0.97vw);
     line-height: calc($scaleSize * 0.97vw);
     color: #00fcf9;
+  }
+}
+
+.expanded {
+  .eachBlock {
+    .title {
+      font-size: calc($scaleSize * 0.9vw);
+    }
+
+    .value {
+      font-size: calc($scaleSize * 1.6vw);
+      line-height: calc($scaleSize * 1.6vw);
+    }
   }
 }

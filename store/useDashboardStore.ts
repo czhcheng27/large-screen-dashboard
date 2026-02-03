@@ -46,6 +46,10 @@ export interface ChartFilter {
   dateRange: FilterValue;
 }
 
+export interface Chart6Filter {
+  selectedCity: "ON" | "BC" | "AB";
+}
+
 export interface ExpandedCardInfo {
   /** 图表唯一标识 */
   chartId: ChartId;
@@ -72,6 +76,8 @@ interface DashboardState {
   centerTopRect: DOMRect | null;
   /** 各图表的过滤器状态 */
   chartFilters: Record<ChartId, ChartFilter>;
+  /** Chart6 特有的过滤器状态 */
+  chart6Filter: Chart6Filter;
   /** 待展开的卡片信息（用于切换时暂存） */
   pendingExpandCard: Omit<ExpandedCardInfo, "targetRect"> | null;
 
@@ -82,6 +88,7 @@ interface DashboardState {
   onAnimationComplete: () => void;
   setChartFilter: (chartId: ChartId, filter: Partial<ChartFilter>) => void;
   getChartFilter: (chartId: ChartId) => ChartFilter;
+  setChart6City: (city: "ON" | "BC" | "AB") => void;
 }
 
 const DEFAULT_FILTER: ChartFilter = {
@@ -100,6 +107,9 @@ export const useDashboardStore = create<DashboardState>((set, get) => ({
     chart4: { ...DEFAULT_FILTER },
     chart5: { ...DEFAULT_FILTER },
     chart6: { ...DEFAULT_FILTER },
+  },
+  chart6Filter: {
+    selectedCity: "ON",
   },
 
   setCenterTopRect: (rect) => set({ centerTopRect: rect }),
@@ -165,5 +175,9 @@ export const useDashboardStore = create<DashboardState>((set, get) => ({
 
   getChartFilter: (chartId) => {
     return get().chartFilters[chartId];
+  },
+
+  setChart6City: (city) => {
+    set({ chart6Filter: { selectedCity: city } });
   },
 }));

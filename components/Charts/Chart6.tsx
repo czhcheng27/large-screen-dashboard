@@ -1,36 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect } from "react";
 import ReactECharts from "echarts-for-react";
+import { useDashboardStore } from "@/store";
+import { dataLeft, dataON, dataAB, dataBC } from "@/mockData";
 import { ChartComponentProps } from "./ChartCard";
-import css from "./Chart6.module.scss";
-import { chart1Data, dataBJ, dataGZ, dataSH } from "@/mockData";
-import { getCommonOption } from "./chartUtils";
 import { Chart6DataItem } from "./types";
-
-const sideData7 = [
-  {
-    title: "Sum Num",
-    value: "1280",
-  },
-  {
-    title: "Equiped",
-    value: "769",
-  },
-  {
-    title: "Not Perfect",
-    value: "20",
-  },
-  "divider",
-  {
-    title: "Overall",
-    value: "92.5%",
-  },
-];
+import css from "./Chart6.module.scss";
 
 const Chart6 = ({ isExpanded }: ChartComponentProps) => {
-  const { option, config } = getCommonOption(isExpanded);
-  const [selectedCity, setSelectedCity] = useState<string>("ON");
+  const { chart6Filter, setChart6City } = useDashboardStore();
+  const selectedCity = chart6Filter.selectedCity;
 
   const lineStyle = {
     width: 1,
@@ -47,17 +27,20 @@ const Chart6 = ({ isExpanded }: ChartComponentProps) => {
   const currentColor = cityColors[selectedCity] || "#00fcf9";
 
   // 响应式配置
-  const fontSize = isExpanded ? 16 : 12;
-  const indicatorNameGap = isExpanded ? 20 : 10;
-  const radarRadius = isExpanded ? "65%" : "60%";
+  const fontSize = isExpanded ? 20 : 12;
+  const indicatorNameGap = isExpanded ? 25 : 10;
+  const radarRadius = isExpanded ? "50%" : "60%";
+  const radarCenterY = isExpanded ? "42%" : "48%";
+  const legendItemGap = isExpanded ? 40 : 20;
+  const legendBottom = isExpanded ? 20 : 5;
 
   const finalOption = {
     backgroundColor: "transparent",
     title: undefined,
     legend: {
-      bottom: isExpanded ? 10 : 5,
+      bottom: legendBottom,
       data: ["ON", "BC", "AB"],
-      itemGap: isExpanded ? 30 : 20,
+      itemGap: legendItemGap,
       textStyle: {
         color: "#fff",
         fontSize: fontSize,
@@ -81,7 +64,7 @@ const Chart6 = ({ isExpanded }: ChartComponentProps) => {
       shape: "circle",
       splitNumber: 5,
       radius: radarRadius,
-      center: ["50%", isExpanded ? "50%" : "48%"],
+      center: ["50%", radarCenterY],
       axisName: {
         color: currentColor,
         fontSize: fontSize,
@@ -113,7 +96,7 @@ const Chart6 = ({ isExpanded }: ChartComponentProps) => {
         name: "ON",
         type: "radar",
         lineStyle: lineStyle,
-        data: dataBJ,
+        data: dataON,
         symbol: "none",
         itemStyle: {
           color: cityColors.ON,
@@ -134,7 +117,7 @@ const Chart6 = ({ isExpanded }: ChartComponentProps) => {
         name: "BC",
         type: "radar",
         lineStyle: lineStyle,
-        data: dataSH,
+        data: dataBC,
         symbol: "none",
         itemStyle: {
           color: cityColors.BC,
@@ -155,7 +138,7 @@ const Chart6 = ({ isExpanded }: ChartComponentProps) => {
         name: "AB",
         type: "radar",
         lineStyle: lineStyle,
-        data: dataGZ,
+        data: dataAB,
         symbol: "none",
         itemStyle: {
           color: cityColors.AB,
@@ -178,7 +161,7 @@ const Chart6 = ({ isExpanded }: ChartComponentProps) => {
   const renderLeft = () => {
     return (
       <>
-        {sideData7.map((el, index) => {
+        {dataLeft.map((el, index) => {
           const isDivider = index == 3;
           return (
             <div key={index} className={isDivider ? css.divide : css.eachBlock}>
@@ -212,7 +195,7 @@ const Chart6 = ({ isExpanded }: ChartComponentProps) => {
             notMerge={true}
             onEvents={{
               legendselectchanged: (params: any) => {
-                setSelectedCity(params.name);
+                setChart6City(params.name);
               },
             }}
           />
