@@ -1,166 +1,206 @@
 "use client";
 
+import { useEffect } from "react";
 import ReactECharts from "echarts-for-react";
+import { useDashboardStore } from "@/store";
+import { dataLeft, dataON, dataAB, dataBC } from "@/mockData";
 import { ChartComponentProps } from "./ChartCard";
-import { scatterData } from "@/mockData";
-import { getCommonOption } from "./chartUtils";
-import { ScatterDataItem } from "./types";
-import css from "./ChartContent.module.scss";
-
-export const formatScatter = (array: ScatterDataItem[] = []) => {
-  let res: any[] = [];
-  array.forEach((el) => {
-    const { abilityScore, tacticScore, firstSystem, firstSystemName } = el;
-    return res.push({
-      firstSystem,
-      firstSystemName,
-      value: [abilityScore, tacticScore],
-    });
-  });
-  return res;
-};
+import { Chart6DataItem } from "./types";
+import css from "./Chart5.module.scss";
 
 const Chart5 = ({ isExpanded }: ChartComponentProps) => {
-  const { option } = getCommonOption(isExpanded);
-  const scatterDataFormatted = formatScatter(scatterData);
+  const { chart6Filter, setChart6City } = useDashboardStore();
+  const selectedCity = chart6Filter.selectedCity;
+
+  const lineStyle = {
+    width: 1,
+    opacity: 0.5,
+  };
+
+  // 根据选中的城市设置不同的颜色
+  const cityColors: Record<string, string> = {
+    ON: "#00fcf9",
+    BC: "#F9713C",
+    AB: "#B3E4A1",
+  };
+
+  const currentColor = cityColors[selectedCity] || "#00fcf9";
+
+  // 响应式配置
+  const fontSize = isExpanded ? 20 : 12;
+  const indicatorNameGap = isExpanded ? 25 : 10;
+  const radarRadius = isExpanded ? "50%" : "60%";
+  const radarCenterY = isExpanded ? "42%" : "48%";
+  const legendItemGap = isExpanded ? 40 : 20;
+  const legendBottom = isExpanded ? 20 : 5;
 
   const finalOption = {
-    // Ensure overall chart background is transparent (avoid theme canvas fill)
     backgroundColor: "transparent",
-    tooltip: {
-      ...option.tooltip,
-      axisPointer: {
-        show: true,
-        type: "cross",
+    title: undefined,
+    legend: {
+      bottom: legendBottom,
+      data: ["ON", "BC", "AB"],
+      itemGap: legendItemGap,
+      textStyle: {
+        color: "#fff",
+        fontSize: fontSize,
+      },
+      selectedMode: "single",
+      selected: {
+        ON: selectedCity === "ON",
+        BC: selectedCity === "BC",
+        AB: selectedCity === "AB",
+      },
+    },
+    radar: {
+      indicator: [
+        { name: "AQI", max: 300 },
+        { name: "PM2.5", max: 250 },
+        { name: "PM10", max: 300 },
+        { name: "CO", max: 5 },
+        { name: "NO2", max: 200 },
+        { name: "SO2", max: 100 },
+      ],
+      shape: "circle",
+      splitNumber: 5,
+      radius: radarRadius,
+      center: ["50%", radarCenterY],
+      axisName: {
+        color: currentColor,
+        fontSize: fontSize,
+      },
+      axisNameGap: indicatorNameGap,
+      splitLine: {
         lineStyle: {
-          type: "dashed",
-          width: 1,
+          color: [
+            "rgba(238, 197, 102, 0.1)",
+            "rgba(238, 197, 102, 0.2)",
+            "rgba(238, 197, 102, 0.4)",
+            "rgba(238, 197, 102, 0.6)",
+            "rgba(238, 197, 102, 0.8)",
+            "rgba(238, 197, 102, 1)",
+          ].reverse(),
         },
       },
-      formatter: function (params: any) {
-        var relVal =
-          `<div class="${isExpanded ? "text-[20px]" : "text-[14px] font-bold"}">` +
-          params[0].data.firstSystemName +
-          "</div>" +
-          `<div class="flex justify-between items-center text-[14px] ${isExpanded ? "mt-3 text-[20px]" : "mt-2"}">` +
-          "<div>" +
-          `<span class="mr-6">` +
-          `Ability Score：` +
-          params[0].data.value[0] +
-          "</span>" +
-          "</div>" +
-          '<div style="height: 14px;line-height: 14px">' +
-          `Tactic Score：` +
-          params[0].data.value[1] +
-          "</div>" +
-          "</div>";
-        return relVal;
+      splitArea: {
+        show: false,
+      },
+      axisLine: {
+        lineStyle: {
+          color: "rgba(238, 197, 102, 0.5)",
+        },
       },
     },
-    grid: {
-      left: "7%",
-      right: "3%",
-      // top: 24,
-      top: 30,
-      bottom: 25,
-      containLabel: true,
-      show: true,
-      borderWidth: 0,
-      backgroundColor: "#052743",
-    },
-    xAxis: [
-      {
-        name: "Ability Score",
-        nameLocation: "middle",
-        nameTextStyle: {
-          color: "white",
-          fontSize: isExpanded ? 16 : 12, //字体大小
-          padding: [5, 5, -25, 5], //距离坐标位置的距离
-          verticalAlign: "bottom",
-        },
-        type: "value",
-        scale: true,
-        min: 0,
-        max: 100,
-        interval: 20,
-        splitLine: {
-          show: false,
-        },
-        axisLabel: {
-          fontSize: isExpanded ? 14 : 10,
-          color: "white",
-        },
-        axisLine: {
-          lineStyle: {
-            color: "transparent",
-          },
-        },
-      },
-    ],
-    yAxis: [
-      {
-        name: "Tactic Score",
-        nameLocation: "middle",
-        nameTextStyle: {
-          color: "white",
-          fontSize: isExpanded ? 16 : 12, //字体大小
-          padding: [5, 5, 10, 5], //距离坐标位置的距离
-          verticalAlign: "bottom",
-        },
-        type: "value",
-        scale: true,
-        min: 0,
-        max: 10,
-        interval: 2,
-        splitLine: {
-          show: false,
-        },
-        axisLabel: {
-          fontSize: isExpanded ? 14 : 10,
-          color: "white",
-        },
-        axisLine: {
-          lineStyle: {
-            color: "transparent",
-          },
-        },
-      },
-    ],
     series: [
       {
-        type: "scatter",
-        data: scatterDataFormatted,
-        dimensions: ["x", "y"],
-        symbolSize: 5,
+        name: "ON",
+        type: "radar",
+        lineStyle: lineStyle,
+        data: dataON,
+        symbol: "none",
         itemStyle: {
-          color: "#01F6FC",
+          color: cityColors.ON,
         },
-        markLine: {
-          silent: true,
-          animation: false,
-          symbol: ["none", "none"],
+        areaStyle: {
+          opacity: 0.1,
+        },
+        emphasis: {
           lineStyle: {
-            silent: true,
-            type: "dashed",
-            color: "#6986FF",
+            width: 2,
           },
-          data: [
-            { yAxis: 5, label: { position: "start", color: "#FF6B6B" } },
-            { xAxis: 50, label: { position: "start", color: "#FF6B6B" } },
-          ],
+          areaStyle: {
+            opacity: 0.2,
+          },
+        },
+      },
+      {
+        name: "BC",
+        type: "radar",
+        lineStyle: lineStyle,
+        data: dataBC,
+        symbol: "none",
+        itemStyle: {
+          color: cityColors.BC,
+        },
+        areaStyle: {
+          opacity: 0.05,
+        },
+        emphasis: {
+          lineStyle: {
+            width: 2,
+          },
+          areaStyle: {
+            opacity: 0.15,
+          },
+        },
+      },
+      {
+        name: "AB",
+        type: "radar",
+        lineStyle: lineStyle,
+        data: dataAB,
+        symbol: "none",
+        itemStyle: {
+          color: cityColors.AB,
+        },
+        areaStyle: {
+          opacity: 0.05,
+        },
+        emphasis: {
+          lineStyle: {
+            width: 2,
+          },
+          areaStyle: {
+            opacity: 0.15,
+          },
         },
       },
     ],
   };
 
+  const renderLeft = () => {
+    return (
+      <>
+        {dataLeft.map((el, index) => {
+          const isDivider = index == 3;
+          return (
+            <div key={index} className={isDivider ? css.divide : css.eachBlock}>
+              {isDivider ? null : renderEachBlock(el as Chart6DataItem)}
+            </div>
+          );
+        })}
+      </>
+    );
+  };
+
+  const renderEachBlock = (el: Chart6DataItem) => {
+    const { title, value } = el;
+    return (
+      <>
+        <div className={css.title}>{title}</div>
+        <div className={css.value}>{value}</div>
+      </>
+    );
+  };
+
   return (
-    <div className={` ${css.chartContent} ${isExpanded ? css.expanded : ""}`}>
-      <ReactECharts
-        option={finalOption}
-        style={{ height: "100%", width: "100%" }}
-        theme="dark"
-        notMerge={true}
-      />
+    <div className={`${css.chart6Content} ${isExpanded ? css.expanded : ""}`}>
+      <div className="w-full h-full grid grid-cols-12">
+        <div className={`col-span-3 ${css.left}`}>{renderLeft()}</div>
+        <div className="col-span-9">
+          <ReactECharts
+            option={finalOption}
+            style={{ height: "100%", width: "100%" }}
+            theme="dark"
+            notMerge={true}
+            onEvents={{
+              legendselectchanged: (params: any) => {
+                setChart6City(params.name);
+              },
+            }}
+          />
+        </div>
+      </div>
     </div>
   );
 };
