@@ -1,9 +1,13 @@
-import React, { useState, useEffect } from "react";
+import dynamic from "next/dynamic";
 import classNames from "classnames";
-import EarthModel from "../EarthModel";
-// import MovingDot from "../MovingDot";
 import { positionList, mockEarthData } from "../../mockData";
 import css from "./index.module.scss";
+
+// 延迟加载 Three.js 地球模型，不阻塞首屏渲染
+const EarthModel = dynamic(() => import("../EarthModel"), {
+  ssr: false,
+  loading: () => null, // 加载期间不显示任何占位，避免闪烁
+});
 
 const params = {
   title: "Left",

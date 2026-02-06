@@ -1,12 +1,15 @@
-import React, { useEffect } from "react";
+import { useEffect, useRef, useCallback } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
-import classNames from "classnames";
-// Next.js 中 import 图片返回对象，需要使用 .src 属性
-// 或者直接使用 public 目录的路径
+import css from "./index.module.scss";
+
 const earchImg = "/earth.png";
 const ringImg = "/ring.png";
-import css from "./index.module.scss";
+const RADIUS = 5;
+// 降低球体面数：50 段足以保证视觉效果，比原来 100 段减少 75% 面数
+const SPHERE_SEGMENTS = 50;
+// 限制最大像素比，避免高分屏渲染压力过大
+const MAX_PIXEL_RATIO = 2;
 
 // 自定义刷新图标组件
 const RefreshIcon = ({ className, onClick }) => (
@@ -23,170 +26,229 @@ const RefreshIcon = ({ className, onClick }) => (
   </svg>
 );
 
-let width, height, renderer, camera, scene, stats, controls, containerDom;
-const radius = 5;
-const group = new THREE.Group();
-const groupHalo = new THREE.Group();
+const EarthModel = () => {
+  // 使用 ref 管理所有 Three.js 实例，避免模块级变量导致多实例冲突与内存泄漏
+  const containerRef = useRef(null);
+  const rendererRef = useRef(null);
+  const cameraRef = useRef(null);
+  const sceneRef = useRef(null);
+  const controlsRef = useRef(null);
+  const groupRef = useRef(new THREE.Group());
+  const groupHaloRef = useRef(new THREE.Group());
+  const animFrameRef = useRef(null);
+  const resizeTimerRef = useRef(null);
 
-const EarthModel = (props) => {
+  const getSize = useCallback(() => {
+    const el = containerRef.current;
+    return {
+      width: el?.clientWidth || 1,
+      height: el?.clientHeight || 1,
+    };
+  }, []);
+
+  const initScene = useCallback(() => {
+    const scene = new THREE.Scene();
+    scene.fog = new THREE.Fog(0xa0a0a0, 200, 1000);
+    sceneRef.current = scene;
+  }, []);
+
+  const initCamera = useCallback(() => {
+    const { width, height } = getSize();
+    const camera = new THREE.PerspectiveCamera(45, width / height, 1, 1000);
+    camera.position.set(0, 0, 24);
+    camera.lookAt(0, 0, 0);
+    cameraRef.current = camera;
+  }, [getSize]);
+
+  const initLight = useCallback(() => {
+    const scene = sceneRef.current;
+    // 环境光
+    scene.add(new THREE.AmbientLight(0xcccccc, 1.1));
+    // 平行光模拟太阳
+    const dirLight1 = new THREE.DirectionalLight(0xff2ffff, 0.2);
+    dirLight1.position.set(1, 0.1, 0.1).normalize();
+    scene.add(dirLight1);
+    // 半球光
+    const hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444, 0.2);
+    hemiLight.position.set(0, 1, 0);
+    scene.add(hemiLight);
+    // 主平行光
+    const dirLight2 = new THREE.DirectionalLight(0xffffff);
+    dirLight2.position.set(100, 500, 20);
+    scene.add(dirLight2);
+  }, []);
+
+  const initRenderer = useCallback(() => {
+    const { width, height } = getSize();
+    const renderer = new THREE.WebGLRenderer({
+      alpha: true,
+      antialias: false, // 关闭抗锯齿，大幅降低 GPU 负担
+      powerPreference: "low-power", // 优先低功耗 GPU
+    });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, MAX_PIXEL_RATIO));
+    renderer.setSize(width, height);
+    renderer.setClearAlpha(0);
+    containerRef.current?.appendChild(renderer.domElement);
+    rendererRef.current = renderer;
+  }, [getSize]);
+
+  const initControls = useCallback(() => {
+    if (controlsRef.current) {
+      controlsRef.current.dispose();
+    }
+    const controls = new OrbitControls(
+      cameraRef.current,
+      rendererRef.current.domElement,
+    );
+    controls.enableDamping = true;
+    controlsRef.current = controls;
+  }, []);
+
+  const initEarth = useCallback(() => {
+    const scene = sceneRef.current;
+    const group = groupRef.current;
+    const groupHalo = groupHaloRef.current;
+    const loader = new THREE.TextureLoader();
+
+    // 光环
+    loader.load(ringImg, (texture) => {
+      const geo = new THREE.PlaneGeometry(26, 26);
+      const mat = new THREE.MeshLambertMaterial({
+        map: texture,
+        transparent: true,
+        side: THREE.DoubleSide,
+      });
+      groupHalo.add(new THREE.Mesh(geo, mat));
+    });
+    groupHalo.position.set(0, 0.5, 0);
+    groupHalo.rotation.set(1.8, 0, 0);
+    scene.add(groupHalo);
+
+    // 地球 — 使用降低后的面数，并用 MeshPhongMaterial 替代 MeshStandardMaterial（更轻量）
+    loader.load(earchImg, (texture) => {
+      const geo = new THREE.SphereGeometry(
+        RADIUS,
+        SPHERE_SEGMENTS,
+        SPHERE_SEGMENTS,
+      );
+      const mat = new THREE.MeshPhongMaterial({ map: texture });
+      group.add(new THREE.Mesh(geo, mat));
+    });
+    group.rotation.set(0, 0, 0.1);
+    group.position.set(0, 2, 0);
+    scene.add(group);
+  }, []);
+
+  const render = useCallback(() => {
+    const renderer = rendererRef.current;
+    const scene = sceneRef.current;
+    const camera = cameraRef.current;
+    if (renderer && scene && camera) {
+      renderer.render(scene, camera);
+    }
+  }, []);
+
+  const animate = useCallback(() => {
+    const group = groupRef.current;
+    const groupHalo = groupHaloRef.current;
+    const controls = controlsRef.current;
+
+    const loop = () => {
+      animFrameRef.current = requestAnimationFrame(loop);
+      if (controls) controls.update();
+      group.rotation.y += 0.001;
+      groupHalo.rotation.z += 0.001;
+      render();
+    };
+    loop();
+  }, [render]);
+
+  // 节流 resize，避免高频触发
+  const resizeEarth = useCallback(() => {
+    if (resizeTimerRef.current) return;
+    resizeTimerRef.current = setTimeout(() => {
+      resizeTimerRef.current = null;
+      const renderer = rendererRef.current;
+      const camera = cameraRef.current;
+      if (!renderer || !camera) return;
+      const { width, height } = getSize();
+      renderer.setSize(width, height);
+      camera.aspect = width / height;
+      camera.updateProjectionMatrix();
+      render();
+    }, 200);
+  }, [getSize, render]);
+
   useEffect(() => {
-    containerDom = document.querySelector("#earthBox");
-    width = containerDom?.clientWidth;
-    height = containerDom?.clientHeight;
-    // console.log(`containerDom`, containerDom, width, height);
+    // 初始化
     initScene();
     initCamera();
     initLight();
     initEarth();
     initRenderer();
+    // 首次渲染
+    render();
     initControls();
     animate();
 
-    // 监听窗口变化
+    // 监听
     window.addEventListener("resize", resizeEarth);
-
-    // 监听全屏模式变化
     document.addEventListener("fullscreenchange", resizeEarth);
     document.addEventListener("webkitfullscreenchange", resizeEarth);
-    document.addEventListener("mozfullscreenchange", resizeEarth);
-    document.addEventListener("MSFullscreenChange", resizeEarth);
 
+    // 清理：销毁所有 Three.js 资源，防止内存泄漏
     return () => {
       window.removeEventListener("resize", resizeEarth);
       document.removeEventListener("fullscreenchange", resizeEarth);
       document.removeEventListener("webkitfullscreenchange", resizeEarth);
-      document.removeEventListener("mozfullscreenchange", resizeEarth);
-      document.removeEventListener("MSFullscreenChange", resizeEarth);
-    };
-  }, []);
 
-  const initRenderer = () => {
-    renderer = new THREE.WebGLRenderer({ alpha: true });
-    // 设置显示比例
-    renderer.setPixelRatio(window.devicePixelRatio);
-    console.log(`renderer.setSize(width, height)`, width, height);
-    renderer.setSize(width, height);
-    renderer.setClearAlpha(0);
-    renderer.render(scene, camera);
-    containerDom?.appendChild(renderer.domElement);
-  };
-
-  const initScene = () => {
-    scene = new THREE.Scene();
-    scene.fog = new THREE.Fog(0xa0a0a0, 200, 1000);
-
-    //创建一个长方体几何对象Geometry
-    const geometry = new THREE.BufferGeometry();
-
-    //创建一个材质对象Material
-    const material = new THREE.MeshPhongMaterial({ depthWrite: false });
-
-    // 两个参数分别为几何体geometry、材质material
-    const mesh = new THREE.Mesh(geometry, material);
-    scene.add(mesh);
-  };
-
-  const initCamera = () => {
-    camera = new THREE.PerspectiveCamera(45, width / height, 1, 1000);
-    camera.position.set(0, 0, 24);
-    camera.lookAt(0, 0, 0);
-  };
-
-  const initLight = () => {
-    // 环境光会均匀的照亮场景中的所有物体。环境光不能用来投射阴影，因为它没有方向。
-    const ambientLight = new THREE.AmbientLight(0xcccccc, 1.1);
-    scene.add(ambientLight);
-
-    // 平行光是沿着特定方向发射的光。从它发出的光线都是平行的。常常用平行光来模拟太阳光的效果
-    const directionalLight2 = new THREE.DirectionalLight(0xff2ffff, 0.2);
-    directionalLight2.position.set(1, 0.1, 0.1).normalize();
-    scene.add(directionalLight2);
-
-    // 半球光, 光源直接放置于场景之上，光照颜色从天空光线颜色渐变到地面光线颜色。半球光不能投射阴影。
-    const hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444, 0.2);
-    hemiLight.position.set(0, 1, 0);
-    scene.add(hemiLight);
-
-    let directionalLight;
-    directionalLight = new THREE.DirectionalLight(0xffffff);
-    directionalLight.position.set(100, 500, 20);
-    scene.add(directionalLight);
-  };
-
-  const initControls = () => {
-    // 设置相机控件轨道监控器 OrbitControls
-    controls = new OrbitControls(camera, renderer.domElement);
-    controls.enableDamping = true; // 阻尼惯性，要使得这一值生效，必须在动画循环里调用.update()
-    // controls.addEventListener("change", function () {
-    //   renderer.render(scene, camera);
-    // });
-  };
-
-  const initEarth = () => {
-    // 初始化一个加载器
-    const globeTextureLoader = new THREE.TextureLoader();
-    // 加载一个资源
-    globeTextureLoader.load(ringImg, function (texture) {
-      const geometry = new THREE.PlaneGeometry(26, 26); //平面缓冲几何体, 一个用于生成平面几何体的类。
-      const material = new THREE.MeshLambertMaterial({
-        map: texture,
-        transparent: true,
-        side: THREE.DoubleSide,
+      // 停止动画循环
+      if (animFrameRef.current) {
+        cancelAnimationFrame(animFrameRef.current);
+      }
+      // 清除 resize 计时器
+      if (resizeTimerRef.current) {
+        clearTimeout(resizeTimerRef.current);
+      }
+      // 销毁控制器
+      if (controlsRef.current) {
+        controlsRef.current.dispose();
+      }
+      // 递归释放场景中的 geometry 和 material
+      sceneRef.current?.traverse((obj) => {
+        if (obj.geometry) obj.geometry.dispose();
+        if (obj.material) {
+          if (Array.isArray(obj.material)) {
+            obj.material.forEach((m) => {
+              m.map?.dispose();
+              m.dispose();
+            });
+          } else {
+            obj.material.map?.dispose();
+            obj.material.dispose();
+          }
+        }
       });
-      const mesh = new THREE.Mesh(geometry, material);
-      groupHalo.add(mesh);
-    });
-    // 光环位置调整：从 -1.5 上移 2 个单位到 0.5
-    groupHalo.position.set(0, 0.5, 0);
-    groupHalo.rotation.set(1.8, 0, 0);
-    scene.add(groupHalo);
-    globeTextureLoader.load(earchImg, function (texture) {
-      const globeGgeometry = new THREE.SphereGeometry(radius, 100, 100); // 球缓冲几何体, 一个用于生成球体的类。
-      // 在实践中，该材质提供了比MeshLambertMaterial 或MeshPhongMaterial 更精确和逼真的结果，代价是计算成本更高
-      const globeMaterial = new THREE.MeshStandardMaterial({ map: texture });
-      const globeMesh = new THREE.Mesh(globeGgeometry, globeMaterial);
-      group.rotation.set(0, 0, 0.1);
-      group.add(globeMesh);
-    });
-    // 地球位置调整：上移 2 个单位
-    group.position.set(0, 2, 0);
-    scene.add(group);
-  };
-
-  const animate = () => {
-    window.requestAnimationFrame(() => {
-      if (controls) controls.update();
-      if (stats) stats.update();
-      group.rotation.y = group.rotation.y + 0.001;
-      groupHalo.rotation.z = groupHalo.rotation.z + 0.001;
-      renders();
-      animate();
-    });
-  };
-
-  const renders = () => {
-    renderer.clear();
-    renderer.render(scene, camera);
-  };
-
-  const resizeEarth = () => {
-    if (!renderer || !camera) {
-      console.warn("渲染器或相机未初始化");
-      return;
-    }
-    const ele = document.querySelector("#earthBox");
-    width = ele?.clientWidth;
-    height = ele?.clientHeight;
-    console.log(`renderer.setSize(width, height)`, width, height);
-    renderer.setSize(width, height);
-    camera.updateProjectionMatrix();
-    initCamera();
-    renders();
-    initControls();
-  };
+      // 销毁渲染器并移除 canvas
+      if (rendererRef.current) {
+        rendererRef.current.dispose();
+        rendererRef.current.domElement?.remove();
+      }
+    };
+  }, [
+    initScene,
+    initCamera,
+    initLight,
+    initEarth,
+    initRenderer,
+    initControls,
+    animate,
+    render,
+    resizeEarth,
+  ]);
 
   return (
-    <div id="earthBox" className={css.earthBox}>
+    <div ref={containerRef} id="earthBox" className={css.earthBox}>
       <RefreshIcon className={css.refreshPosition} onClick={resizeEarth} />
     </div>
   );

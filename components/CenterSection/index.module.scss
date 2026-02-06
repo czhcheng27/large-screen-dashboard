@@ -9,6 +9,7 @@
     position: absolute;
     z-index: 111;
     transform: translateY(0px);
+    will-change: transform; // 提示浏览器提前为动画分配 GPU 合成层
     background-image: url("/icon13.png");
     background-repeat: no-repeat;
     background-position: center;
