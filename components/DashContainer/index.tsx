@@ -11,6 +11,7 @@ import {
   Chart5,
   Chart6,
 } from "../Charts";
+import CenterSection from "../CenterSection";
 import ExpandedCardOverlay from "../ExpandedCardOverlay";
 import css from "./index.module.scss";
 
@@ -54,9 +55,10 @@ const DashContainer = ({}: DashContainerProps) => {
       <div className={css.center}>
         <div className={css.centerTop} ref={centerTopRef}>
           {/* 这里是放大后的内容展示区域 */}
-          <div className={css.centerTopPlaceholder}>
+          <CenterSection />
+          {/* <div className={css.centerTopPlaceholder}>
             点击四周卡片的放大按钮，内容将在此处放大展示
-          </div>
+          </div> */}
         </div>
         <div className={css.centerBottom}>
           <div>
