@@ -163,18 +163,30 @@ const EarthModel = () => {
     loop();
   }, [render]);
 
-  // 节流 resize，避免高频触发
+  // 重置相机和控制器到初始状态
   const resizeEarth = useCallback(() => {
     if (resizeTimerRef.current) return;
     resizeTimerRef.current = setTimeout(() => {
       resizeTimerRef.current = null;
       const renderer = rendererRef.current;
       const camera = cameraRef.current;
+      const controls = controlsRef.current;
       if (!renderer || !camera) return;
+
       const { width, height } = getSize();
       renderer.setSize(width, height);
       camera.aspect = width / height;
+
+      // 重置相机位置和朝向
+      camera.position.set(0, 0, 24);
+      camera.lookAt(0, 0, 0);
       camera.updateProjectionMatrix();
+
+      // 重置 OrbitControls 状态
+      if (controls) {
+        controls.reset();
+      }
+
       render();
     }, 200);
   }, [getSize, render]);
