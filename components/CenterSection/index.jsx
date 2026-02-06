@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import classNames from "classnames";
-// import Earth from "../Earth";
+import EarthModel from "../EarthModel";
 // import MovingDot from "../MovingDot";
 import { positionList, mockEarthData } from "../../mockData";
 import css from "./index.module.scss";
@@ -79,8 +79,8 @@ const CenterSection = () => {
   return (
     <div className={css.chartBox}>
       {compileNodeList()}
-      {/* <Earth />
-      <MovingDot /> */}
+      <EarthModel />
+      {/* <MovingDot /> */}
     </div>
   );
 };

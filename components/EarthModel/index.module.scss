@@ -1,0 +1,16 @@
+.earthBox {
+  width: 100%;
+  height: calc(100% - 0px);
+  top: 0px;
+  left: 0;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+}
+.refreshPosition {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  color: #ffffff;
+  z-index: 11111;
+}

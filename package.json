@@ -17,6 +17,7 @@
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "sass": "^1.97.2",
+    "three": "0.153.0",
     "zustand": "^5.0.10"
   },
   "devDependencies": {

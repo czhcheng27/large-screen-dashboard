@@ -290,11 +290,11 @@ export const scatterData = [
 ]
 
 export const positionList = [
-  { top: 29, left: 40, size: 90 },
-  { top: 42, right: 22, size: 95 },
-  { top: 66, left: 8, size: 100 },
-  { bottom: 28, right: 14, size: 105 },
-  { bottom: 21, left: 30, size: 110 },
+  { top: 19, left: 30, size: 90 },
+  { top: 32, right: 22, size: 95 },
+  { top: 56, left: 8, size: 100 },
+  { bottom: 32, right: 29, size: 105 },
+  { bottom: 24, left: 30, size: 110 },
 ];
 
 export const mockEarthData = {
