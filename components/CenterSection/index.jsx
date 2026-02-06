@@ -3,10 +3,10 @@ import classNames from "classnames";
 import { positionList, mockEarthData } from "../../mockData";
 import css from "./index.module.scss";
 
-// 延迟加载 Three.js 地球模型，不阻塞首屏渲染
+// 延迟加载 Three.js 地球模型
 const EarthModel = dynamic(() => import("../EarthModel"), {
   ssr: false,
-  loading: () => null, // 加载期间不显示任何占位，避免闪烁
+  loading: () => null,
 });
 
 const params = {
