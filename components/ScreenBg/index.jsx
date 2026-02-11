@@ -113,12 +113,12 @@ const ScreenBg = (props) => {
       for (let i = 1; i <= 5; i++) {
         globeMeshList[i - 1].position.set(
           getArrowPositionX(i),
-          0,
+          0.05,
           i == 2 || i == 3 ? 10 : 2,
         );
         globeMeshList[i + 4].position.set(
           getArrowPositionX(i),
-          0,
+          0.05,
           i == 2 || i == 3 ? 10 : 2,
         );
         globeMeshList[i - 1].rotation.set(-Math.PI / 2, 0, 0);
