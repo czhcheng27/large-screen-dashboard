@@ -50,6 +50,14 @@ export interface Chart6Filter {
   selectedCity: "ON" | "BC" | "AB";
 }
 
+/** 简单的矩形信息接口，替代 DOMRect 以便手动调整 */
+export interface SimpleRect {
+  top: number;
+  left: number;
+  width: number;
+  height: number;
+}
+
 export interface ExpandedCardInfo {
   /** 图表唯一标识 */
   chartId: ChartId;
@@ -62,7 +70,7 @@ export interface ExpandedCardInfo {
   /** 源卡片的 DOM 位置信息 */
   sourceRect: DOMRect;
   /** 目标区域（center top）的 DOM 位置信息 */
-  targetRect: DOMRect;
+  targetRect: SimpleRect;
 }
 
 // ============ Store 状态 ============
@@ -125,8 +133,18 @@ export const useDashboardStore = create<DashboardState>((set, get) => ({
         pendingExpandCard: info,
       });
     } else if (animationState === "idle") {
+      // 这里的偏移量决定了卡片展开后飞向的最终位置（纵向）
+      // 我们将其向上偏移 80px，以匹配视觉中心（如地球模型的位置）
+      const verticalOffset = -80;
+      const targetRect: SimpleRect = {
+        top: centerTopRect.top + verticalOffset,
+        left: centerTopRect.left,
+        width: centerTopRect.width,
+        height: centerTopRect.height,
+      };
+
       set({
-        expandedCard: { ...info, targetRect: centerTopRect },
+        expandedCard: { ...info, targetRect },
         animationState: "expanding",
       });
     }
@@ -145,9 +163,17 @@ export const useDashboardStore = create<DashboardState>((set, get) => ({
     if (animationState === "collapsing") {
       // 收起动画完成
       if (pendingExpandCard && centerTopRect) {
+        const verticalOffset = -80;
+        const targetRect: SimpleRect = {
+          top: centerTopRect.top + verticalOffset,
+          left: centerTopRect.left,
+          width: centerTopRect.width,
+          height: centerTopRect.height,
+        };
+
         // 有待展开的卡片，立即展开
         set({
-          expandedCard: { ...pendingExpandCard, targetRect: centerTopRect },
+          expandedCard: { ...pendingExpandCard, targetRect },
           animationState: "expanding",
           pendingExpandCard: null,
         });
