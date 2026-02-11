@@ -133,11 +133,8 @@ export const useDashboardStore = create<DashboardState>((set, get) => ({
         pendingExpandCard: info,
       });
     } else if (animationState === "idle") {
-      // 这里的偏移量决定了卡片展开后飞向的最终位置（纵向）
-      // 我们将其向上偏移 80px，以匹配视觉中心（如地球模型的位置）
-      const verticalOffset = -80;
       const targetRect: SimpleRect = {
-        top: centerTopRect.top + verticalOffset,
+        top: centerTopRect.top,
         left: centerTopRect.left,
         width: centerTopRect.width,
         height: centerTopRect.height,
@@ -163,9 +160,8 @@ export const useDashboardStore = create<DashboardState>((set, get) => ({
     if (animationState === "collapsing") {
       // 收起动画完成
       if (pendingExpandCard && centerTopRect) {
-        const verticalOffset = -80;
         const targetRect: SimpleRect = {
-          top: centerTopRect.top + verticalOffset,
+          top: centerTopRect.top,
           left: centerTopRect.left,
           width: centerTopRect.width,
           height: centerTopRect.height,
