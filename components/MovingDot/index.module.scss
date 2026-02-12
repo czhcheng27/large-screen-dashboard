@@ -1,0 +1,15 @@
+.movingDot {
+  width: 100%;
+  height: calc(100% - 40px);
+  top: 40px;
+  left: 0;
+  position: absolute;
+  overflow: hidden;
+  pointer-events: none; // 确保不阻挡交互
+  z-index: 0; // 确保层级正确
+
+  // 使用遮罩：中心区域（地球位置）清晰，四周（卡片区域）变淡
+  // black (opacity 1) -> transparent/faint (opacity low)
+  mask-image: radial-gradient(ellipse 70% 80% at 50% 40%, black 30%, rgba(0, 0, 0, 0.2) 80%);
+  -webkit-mask-image: radial-gradient(ellipse 70% 80% at 50% 40%, black 30%, rgba(0, 0, 0, 0.2) 80%);
+}
