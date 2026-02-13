@@ -1,5 +1,113 @@
-.dashHeader {
+.headBox {
   width: 100%;
   height: 110px;
   position: relative;
+  .headTitle {
+    width: 31%;
+    height: 110px;
+    padding-bottom: 36px;
+    position: absolute;
+    z-index: 10;
+    top: 0;
+    left: 34.5%;
+    background-image: url("/icon1.png");
+    background-repeat: no-repeat;
+    background-size: 100% 119px;
+    background-position: center top;
+    font-size: 30px;
+    font-family: PangMenZhengDao;
+    color: #ffffff;
+    letter-spacing: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .buttonBox {
+    width: 35.5vw;
+    top: 22px;
+    position: absolute;
+    display: flex;
+    justify-content: space-between;
+    .buttonNode {
+      width: 32%;
+      height: 50px;
+      padding-bottom: 10px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      text-align: left;
+      color: #ffffff;
+      letter-spacing: 2px;
+      cursor: pointer;
+      span {
+        z-index: 1;
+        font-weight: 600;
+      }
+    }
+    .buttonNode::before {
+      content: "";
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+      background-image: url("/icon3.png");
+      background-repeat: no-repeat;
+      background-size: 100% 50px;
+      background-position: center top;
+    }
+    .buttonActiveNode::before {
+      background-image: url("/icon4.png");
+    }
+    .leftButton::before {
+      transform: rotateY(0deg);
+    }
+    .rightButton::before {
+      transform: rotateY(180deg);
+    }
+  }
+  .leftButtonBox {
+    left: 0;
+    padding-left: 16px;
+  }
+  .rightButtonBox {
+    right: 0;
+    padding-right: 16px;
+  }
+}
+.headBox::before {
+  content: "";
+  width: 36.5vw;
+  height: 14px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-image: url("/icon2.png");
+  background-repeat: no-repeat;
+  background-size: 100% 14px;
+  background-position: center top;
+  transform: rotateY(180deg);
+}
+.headBox::after {
+  content: "";
+  width: 36.5vw;
+  height: 14px;
+  position: absolute;
+  top: 0;
+  right: 0;
+  background-image: url("/icon2.png");
+  background-repeat: no-repeat;
+  background-size: 100% 14px;
+  background-position: center top;
+}
+
+.closeIcon {
+  height: 20px;
+  position: absolute;
+  right: 8px;
+  top: 30px;
+  cursor: pointer;
+  z-index: 111;
 }
