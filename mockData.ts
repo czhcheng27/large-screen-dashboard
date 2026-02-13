@@ -293,8 +293,8 @@ export const positionList = [
   { top: 19, left: 30, size: 90 },
   { top: 32, right: 22, size: 95 },
   { top: 56, left: 8, size: 100 },
-  { bottom: 32, right: 29, size: 105 },
-  { bottom: 24, left: 30, size: 110 },
+  { bottom: 32, right: 19, size: 105 },
+  { bottom: 24, left: 35, size: 110 },
 ];
 
 export const mockEarthData = {
